@@ -1,0 +1,13 @@
+# Dependências e builds
+node_modules/
+dist/
+coverage/
+
+# Ambiente
+.env
+.env.local
+
+# Sistema
+*.log
+.DS_Store
+Thumbs.db
