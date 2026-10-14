@@ -6,3 +6,133 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model jogadores {
+  id           Int       @id @default(autoincrement())
+  nome         String    @db.VarChar(100)
+  posicao      String    @db.VarChar(3)
+  agilidade    Int
+  idade        Int
+  valor_base   Decimal   @db.Decimal(6, 2)
+  condicao     String    @default("APTO") @db.VarChar(20)
+  clube_id     Int?
+  velocidade   Int
+  finalizacao  Int
+  passe        Int
+  drible       Int
+  defesa       Int
+  fisico       Int
+  potencial    Int
+  excluido_em  DateTime?
+  criado_em    DateTime  @default(now())
+  atualizado_em DateTime @updatedAt
+
+  clube       clubes?       @relation(fields: [clube_id], references: [id])
+  contratos   contratos[]
+  transacoes  transacoes[]
+  escalacoes  escalacoes[]
+  duelos_atacante duelos_partida[] @relation("atacante")
+  duelos_defensor duelos_partida[] @relation("defensor")
+}
+
+model clubes {
+  id               Int       @id @default(autoincrement())
+  nome             String    @db.VarChar(60)
+  nome_normalizado String?   @db.VarChar(60)
+  sigla            String    @unique @db.Char(3)
+  caixa            Decimal   @default(300.00) @db.Decimal(10, 2)
+  formacao         String?   @db.VarChar(5)
+  criado_em        DateTime  @default(now())
+
+  jogadores              jogadores[]
+  contratos              contratos[]
+  transacoes             transacoes[]
+  escalacoes             escalacoes[]
+  partidas_mandante      partidas[]         @relation("mandante")
+  partidas_visitante     partidas[]         @relation("visitante")
+  duelos_clube_atacante  duelos_partida[]   @relation("clube_atacante")
+
+  @@unique([nome_normalizado], map: "clubes_nome_normalizado_key")
+}
+
+model contratos {
+  id             Int       @id @default(autoincrement())
+  jogador_id     Int
+  clube_id       Int
+  valor_compra   Decimal   @db.Decimal(6, 2)
+  fidelidade_ate DateTime
+  situacao       String    @default("ATIVO") @db.VarChar(12)
+  iniciado_em    DateTime  @default(now())
+  encerrado_em   DateTime?
+
+  jogador jogadores @relation(fields: [jogador_id], references: [id])
+  clube   clubes    @relation(fields: [clube_id], references: [id])
+}
+
+model transacoes {
+  id              Int      @id @default(autoincrement())
+  clube_id        Int
+  jogador_id      Int
+  nome_jogador    String   @db.VarChar(100)
+  tipo            String   @db.VarChar(6)
+  valor           Decimal  @db.Decimal(6, 2)
+  taxa            Decimal  @db.Decimal(6, 2)
+  multa           Decimal  @db.Decimal(6, 2)
+  lucro           Decimal? @db.Decimal(7, 2)
+  variacao_caixa  Decimal  @db.Decimal(8, 2)
+  criado_em       DateTime @default(now())
+
+  clube   clubes    @relation(fields: [clube_id], references: [id])
+  jogador jogadores @relation(fields: [jogador_id], references: [id])
+}
+
+model escalacoes {
+  clube_id   Int
+  jogador_id Int      @unique
+  criado_em  DateTime @default(now())
+
+  clube   clubes    @relation(fields: [clube_id], references: [id])
+  jogador jogadores @relation(fields: [jogador_id], references: [id])
+
+  @@id([clube_id, jogador_id])
+}
+
+model partidas {
+  id                  Int      @id @default(autoincrement())
+  mandante_id         Int
+  visitante_id        Int
+  gols_mandante       Int
+  gols_visitante      Int
+  formacao_mandante   String   @db.VarChar(5)
+  formacao_visitante  String   @db.VarChar(5)
+  jogada_em           DateTime @default(now())
+
+  mandante  clubes           @relation("mandante", fields: [mandante_id], references: [id])
+  visitante clubes           @relation("visitante", fields: [visitante_id], references: [id])
+  duelos    duelos_partida[]
+}
+
+model duelos_partida {
+  id                 Int     @id @default(autoincrement())
+  partida_id         Int
+  ordem              Int
+  clube_atacante_id  Int
+  atacante_id        Int
+  defensor_id        Int
+  nome_atacante      String  @db.VarChar(100)
+  nome_defensor      String  @db.VarChar(100)
+  posicao_atacante   String  @db.VarChar(3)
+  posicao_defensor   String  @db.VarChar(3)
+  condicao_atacante  String  @db.VarChar(20)
+  condicao_defensor  String  @db.VarChar(20)
+  atributo_ataque    String  @db.VarChar(10)
+  atributo_defesa    String  @db.VarChar(10)
+  valor_ataque       Int
+  valor_defesa       Int
+  gol                Boolean
+
+  partida        partidas  @relation(fields: [partida_id], references: [id])
+  clube_atacante clubes    @relation("clube_atacante", fields: [clube_atacante_id], references: [id])
+  atacante       jogadores @relation("atacante", fields: [atacante_id], references: [id])
+  defensor       jogadores @relation("defensor", fields: [defensor_id], references: [id])
+}
