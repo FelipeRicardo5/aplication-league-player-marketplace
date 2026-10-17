@@ -5,6 +5,7 @@ import { LoggerModule } from 'nestjs-pino';
 
 import { DomainModule } from './domain/domain.module';
 import { HealthModule } from './health/health.module';
+import { PlayersModule } from './players/players.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -27,6 +28,7 @@ import { PrismaModule } from './prisma/prisma.module';
     PrismaModule,
     DomainModule,
     HealthModule,
+    PlayersModule,
   ],
 })
 export class AppModule {}
