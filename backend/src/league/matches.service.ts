@@ -80,7 +80,18 @@ export class MatchesService {
       throw new ConflictException('Clube visitante não possui escalação completa');
     }
 
-    const mapToMatchPlayer = (p: any): MatchPlayer => ({
+    const mapToMatchPlayer = (p: {
+      id: number;
+      nome: string;
+      posicao: string;
+      condicao: string;
+      velocidade: number;
+      finalizacao: number;
+      passe: number;
+      drible: number;
+      defesa: number;
+      fisico: number;
+    }): MatchPlayer => ({
       id: p.id,
       name: p.nome,
       position: p.posicao as Position,
@@ -175,7 +186,9 @@ export class MatchesService {
       }
     }
 
-    const whereClause: any = {};
+    const whereClause: {
+      OR?: Array<{ mandante_id: number } | { visitante_id: number }>;
+    } = {};
     if (query.club_id !== undefined) {
       whereClause.OR = [{ mandante_id: query.club_id }, { visitante_id: query.club_id }];
     }

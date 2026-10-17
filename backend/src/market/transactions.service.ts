@@ -36,7 +36,11 @@ export class TransactionsService {
       }
     }
 
-    const whereClause: any = {
+    const whereClause: {
+      clube_id: number;
+      jogador_id?: number;
+      tipo?: { in: string[] };
+    } = {
       clube_id: clubId,
     };
 
@@ -60,7 +64,7 @@ export class TransactionsService {
     let totalPenalties = 0;
     let totalProfit = 0;
 
-    const data = transactions.map((tx: any) => {
+    const data = transactions.map((tx) => {
       const val = Number(tx.valor);
       const fee = Number(tx.taxa);
       const penalty = Number(tx.multa);

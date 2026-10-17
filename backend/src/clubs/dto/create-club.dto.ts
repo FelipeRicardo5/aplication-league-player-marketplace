@@ -18,7 +18,7 @@ export const createClubSchema = z
           message: 'O nome do clube deve ter entre 2 e 5 palavras',
         },
       )
-      .refine((val) => /^[\p{L}\s\-\.]+$/u.test(val), {
+      .refine((val) => /^[\p{L}\s.-]+$/u.test(val), {
         message: 'O nome do clube deve conter apenas letras, espaços, hífen e ponto',
       }),
     acronym: z
