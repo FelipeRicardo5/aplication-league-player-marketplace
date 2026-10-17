@@ -17,13 +17,10 @@ export const buyPlayerSchema = z
         error:
           'loyalty_until é obrigatório e deve ser uma string de data no formato ISO com offset -03:00',
       })
-      .refine(
-        (val) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?-03:00$/.test(val),
-        {
-          message:
-            'loyalty_until deve estar no formato AAAA-MM-DDTHH:MM-03:00 ou AAAA-MM-DDTHH:MM:SS-03:00',
-        },
-      )
+      .refine((val) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?-03:00$/.test(val), {
+        message:
+          'loyalty_until deve estar no formato AAAA-MM-DDTHH:MM-03:00 ou AAAA-MM-DDTHH:MM:SS-03:00',
+      })
       .refine(
         (val) => {
           const date = new Date(val);
@@ -33,8 +30,7 @@ export const buyPlayerSchema = z
           return date.getTime() > now && date.getTime() <= maxFuture;
         },
         {
-          message:
-            'loyalty_until deve ser uma data futura não superior a 1.095 dias',
+          message: 'loyalty_until deve ser uma data futura não superior a 1.095 dias',
         },
       ),
   })
