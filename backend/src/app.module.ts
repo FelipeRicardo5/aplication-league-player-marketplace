@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 import { stdTimeFunctions } from 'pino';
 import { LoggerModule } from 'nestjs-pino';
 
+import { ClubsModule } from './clubs/clubs.module';
 import { DomainModule } from './domain/domain.module';
 import { HealthModule } from './health/health.module';
 import { PlayersModule } from './players/players.module';
@@ -29,6 +30,7 @@ import { PrismaModule } from './prisma/prisma.module';
     DomainModule,
     HealthModule,
     PlayersModule,
+    ClubsModule,
   ],
 })
 export class AppModule {}
