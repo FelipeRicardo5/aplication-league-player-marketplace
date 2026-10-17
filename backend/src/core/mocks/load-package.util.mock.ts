@@ -5,4 +5,3 @@ export function loadPackage(): Record<string, unknown> {
 export function createRequire(): () => Record<string, unknown> {
   return () => ({});
 }
-
