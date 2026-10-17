@@ -1,234 +1,206 @@
 # Mercado de Jogadores da Liga
 
-> **Este documento é vivo.** Ele reúne a arquitetura definida para o projeto e, a cada
-> etapa de desenvolvimento, registra as decisões técnicas tomadas, com o motivo e a
-> alternativa descartada. A seção [Decisões registradas](#4-decisões-registradas) é
-> atualizada em cada entrega; a seção [Estado atual](#5-estado-atual) mostra o que já
-> está funcionando. As instruções de execução são mantidas verdadeiras a cada entrega.
-
-Estudo de caso SENAI/PE — **CÓD. 237** (Desenvolvedor Fullstack I). Aplicação fullstack
-de um mercado de jogadores de uma liga de futebol fictícia.
+Aplicação fullstack de um mercado de jogadores de uma liga de futebol fictícia — Estudo de caso SENAI/PE (CÓD. 237 — Desenvolvedor Fullstack I).
 
 ---
 
-## 1. Visão geral
+## 1. Pré-requisitos
 
-- **API REST** sob o prefixo `/api/v1`, sem autenticação, com CORS restrito à origem do
-  frontend (lida de variável de ambiente).
-- **SPA React** consome a API e entrega as telas do mockup (listagem de jogadores com
-  paginação, clubes, transações do clube, partidas, classificação e operações de
-  compra/venda/escalação/condição).
-- **Banco PostgreSQL 16**, criado do zero pelos comandos documentados aqui.
+Para executar o projeto localmente sem Docker, certifique-se de possuir instalado:
 
----
-
-## 2. Arquitetura do backend
-
-### 2.1 Stack
-
-| Camada | Tecnologia | Motivo |
-| --- | --- | --- |
-| Runtime | Node 22 LTS | permitido pelo enunciado; o 20 LTS saiu de suporte em abril/2026, e o 22 atende ao Nest CLI 12 (require(ESM)) |
-| Framework | NestJS 12 (Express) | estrutura modular, injeção de dependência e exception filter nativos |
-| Banco | PostgreSQL 16 + Prisma 6.19.3 | migrations versionadas; linha clássica do Prisma (6.x estável), sem driver adapter |
-| Validação | Zod 4 (pipe global) | mecanismo declarativo de validação (criterio B2) |
-| Logs | pino (nestjs-pino) | log real de HTTP: uma linha por requisição (diferencial B5) |
-| Testes | Jest + supertest | padrão do NestJS, zero configuração com decorators |
-| Qualidade | ESLint 9 + Prettier | `lint` e `format:check` rodam sem erros (diferencial B5) |
-
-### 2.2 Organização do código (feature modules + domínio puro)
-
-backend/src/
-├── main.ts                     # bootstrap: prefixo /api/v1, CORS, logger
-├── app.module.ts
-├── common/
-│   ├── filters/                # exception filter global → { message }
-│   └── pipes/                  # ZodValidationPipe parametrizado por rota
-├── config/                     # schema Zod do .env (falha cedo)
-├── prisma/                     # PrismaService + TransactionRunner
-├── domain/                     # funções puras, sem I/O (única fonte de cada cálculo)
-│   ├── money.ts                # centavos e arredondamento half-away-from-zero
-│   ├── market-value.ts         # RN02–RN05
-│   ├── overall.ts              # RN06 (overall e valor base)
-│   ├── contract.ts             # RN15 (dias restantes e multa)
-│   ├── sale.ts                 # RN13 e RN16 (taxa, comissão, crédito)
-│   ├── lineup.ts               # RN19 (formações e setores)
-│   └── duel.ts                 # RN20 (condição, duelos e placar)
-├── shared/                     # text (normalização e ordem), dates (RN01), ids, query
-└── modules/
-    ├── health/                 # GET /health
-    ├── players/                # GET/POST /players, GET/PUT/DELETE /players/{id}, PATCH /players/{id}/condition
-    ├── clubs/                  # GET/POST /clubs, GET /clubs/{id}, PUT/GET /clubs/{id}/lineup
-    ├── transfers/              # POST /players/{id}/buy e /sell
-    ├── transactions/           # GET /clubs/{id}/transactions e /transactions/export
-    ├── matches/                # GET/POST /matches, GET /matches/{id}
-    └── standings/              # GET /standings
-
-
-Módulos e rotas em **inglês** (as rotas do enunciado são em inglês); tabelas e colunas em
-**português snake_case** (exigência do enunciado, ver seção 4, decisão 10).
-
-### 2.3 Camadas e fluxo de uma requisição
-
-HTTP → pipe Zod (valida) → controller → service → repository → Prisma → PostgreSQL
-                     ↑                     ↓
-        exception filter global      domain/ (funções puras)
-
-- controller: só HTTP (recebe o dado já validado, devolve a resposta, seta `Location` nos 201). Não calcula regra nem fala com o Prisma.
-- service: orquestra o caso de uso e abre a transação. Não contém fórmulas; chama as funções de `domain/`.
-- domain: toda fórmula de negócio, pura e testável, em um único lugar (valor de mercado, overall, taxa, multa, comissão, placar).
-- repository: única camada que consulta o Prisma; aceita o cliente de transação.
-- Listagens: o repository filtra no SQL o que for coluna (posição, condição, clube, idade); o service calcula o valor de mercado, filtra a faixa de valor, ordena e pagina (o valor de mercado não é coluna).
-
-### 2.4 Regras transversais
-
-- **Erros**: exception filter global devolve `{ message }` — `400` (dado/parâmetro
-  inválido), `404` (recurso inexistente), `409` (regra de negócio). Sem stack trace.
-- **Transações**: compra, venda, partida (com duelos), escalação e alteração de condição
-  que tira um titular rodam cada uma numa única transação do Prisma.
-- **Datas**: entrada `AAAA-MM-DDTHH:MM-03:00`, resposta `AAAA-MM-DDTHH:MM:SS-03:00`,
-  sempre horário de Brasília.
-- **Dinheiro**: centavos na lógica, `DECIMAL` no banco, 2 casas só na resposta da API.
-- **CORS**: origem restrita vinda de variável de ambiente (nunca `*`).
-
-- Validação: o pipe recebe o schema de cada rota; ids de URL inválidos viram 404 (V8); campos extras são descartados (V7); JSON inválido e corpo que não é objeto viram 400.
-- Concorrência: compra e venda travam a linha do clube (`SELECT ... FOR UPDATE`) dentro da transação, para o caixa nunca ficar inconsistente.
-- Logs: pino-http com `isoTime` e uma única linha por requisição (método, caminho e status).
+- **Node.js**: versão `22.x` (LTS recomendada, ex.: `v22.23.3` ou compatível).
+- **npm**: versão `>= 10.x`.
+- **PostgreSQL**: versão `16` (caso não utilize o container do Docker Compose).
+- **Docker e Docker Compose** (opcional para execução com containers).
 
 ---
 
-## 3. Arquitetura do frontend
+## 2. Passo a passo para criar o banco de dados e para recriá-lo do zero
 
-### 3.1 Stack
+O banco de dados utiliza PostgreSQL 16 com o schema versionado via migrations do Prisma ORM (`prisma/migrations`).
 
-| Camada | Tecnologia | Motivo |
-| --- | --- | --- |
-| Build | Vite + React + TypeScript | permitido pelo enunciado |
-| Rotas | React Router (modo biblioteca) | exigido pelo enunciado; sem Route Handlers de servidor |
-| Requisições | `fetch` + wrapper próprio | sem bibliotecas extras; erros tipados a partir do `{ message }` da API |
-| Validação de formulários | Zod | validação de campos obrigatórios e faixas antes do envio (critério F2); schemas por feature |
-| Estilo | Tailwind CSS + shadcn/ui | permitido pelo enunciado |
-| Testes | Vitest + Testing Library | mesmo runner do build Vite |
-| Qualidade | ESLint 9 + Prettier | espelho do backend |
+### 2.1 Criar o banco de dados do zero
 
-### 3.2 Organização do código (features em camadas)
-
-```
-frontend/src/
-├── main.tsx                      # root React + Router
-├── app/                          # rotas e layout
-├── lib/
-│   ├── api.ts                    # cliente fetch: base URL, ApiError com o message da API
-│   ├── format.ts                 # moeda (1.234,56) e data em Brasília (só formata, não recalcula)
-│   ├── dates.ts                  # datetime-local → AAAA-MM-DDTHH:MM-03:00
-│   └── use-action.ts             # hook de ação: trava de envio, sucesso ou message da API
-├── components/
-│   ├── ui/                       # shadcn/ui
-│   └── shared/                   # DataTable, FormField, PageState, Feedback, ConfirmDialog
-└── features/
-    ├── players/  clubs/  transfers/  transactions/  lineup/  matches/  standings/
-    └── <feature>/
-        ├── api.ts                # funções de chamada à API (única camada que usa lib/api)
-        ├── hooks.ts              # estado de carga/erro e refetch
-        ├── schemas.ts            # schemas Zod dos formulários
-        ├── components/
-        └── pages/
+1. A partir da raiz do repositório, inicie o container PostgreSQL:
+```bash
+docker compose up -d db
 ```
 
-### 3.3 Fluxo de dados e telas
+2. Na pasta `backend/`, aplique as migrações:
+```bash
+cd backend
+npx prisma migrate deploy
+```
+*O banco será inicializado vazio com as 7 tabelas obrigatórias da liga (`jogadores`, `clubes`, `contratos`, `transacoes`, `escalacoes`, `partidas`, `duelos_partida`).*
 
-Página → hook da feature → api.ts da feature → lib/api
+### 2.2 Recriar o banco do zero (apagar e recriar)
 
-- Nenhum componente chama `fetch`: só `features/*/api.ts` usa `lib/api.ts` (critério F2).
-- Estado com `useState`/`useEffect` por hook de recurso; depois de cada ação, o hook refaz a consulta e a tela mostra o dado devolvido pela API, sem recarregar a página. Sem biblioteca de estado global.
-- Nada é recalculado na tela: valor base, valor de mercado, overall, taxa, multa, comissão, lucro, crédito, patrimônio, totais, placar e classificação vêm da API. Somar valor e taxa para o custo total é permitido.
-- Todo botão de ação usa `useAction`: fica desabilitado durante o envio, e o clique duplo gera um único pedido (critério F3).
-- Toda tela de lista usa `PageState` para carregando, vazio e erro (6 telas: jogadores, clubes, elenco, histórico de transações, histórico de partidas e classificação).
-- Formulários validam, antes de enviar, os campos obrigatórios e as faixas de um campo só (nome 3–100, clube 3–60, sigla com 3 letras, agilidade 1–100, idade 16–45, atributos e potencial 1–99), com a mensagem junto ao campo. Regras de banco e de estado (409 e 404) ficam na API, e a tela mostra o `message`.
-- Telas: jogadores (lista, cadastro, edição, condição, exclusão, compra), clubes (lista, criação, página com elenco, venda, histórico, escalação), partidas (jogar e histórico) e classificação.
-
----
-
-## 4. Decisões registradas
-
-Cada linha é uma decisão tomada durante o desenvolvimento, com data, motivo e alternativa
-descartada. Esta seção cresce a cada entrega.
-
-| # | Data | Decisão | Motivo / alternativa descartada |
-| --- | --- | --- | --- |
-| 1 | 2026-10-14 | Backend em **NestJS 12** (não Fastify puro) | o plano original citava Fastify; NestJS dá camadas, DI e exception filter nativos, que o barema exige |
-| 2 | 2026-10-14 | **Prisma 6.19** (não Prisma 7) | a linha 7 exige driver adapter (`@prisma/adapter-pg`) e `prisma.config.ts`; complexidade sem benefício para o caso |
-| 3 | 2026-10-14 | **TypeScript 5.9** (não 7.x) | `ts-jest` exige `<7` e `typescript-eslint` exige `<6.1.0`; 5.9 é também o mais seguro para decorators |
-| 4 | 2026-10-14 | **ESLint 9** (não 10) | ESLint 9 é maduro e totalmente compatível com `typescript-eslint` 8 e com o Node 22 LTS; o 10 só traria breaking changes sem benefício para o barema |
-| 5 | 2026-10-14 | **Jest** no backend, **Vitest** no frontend | Jest é o padrão do NestJS (decorators sem config extra); Vitest combina com o build Vite |
-| 6 | 2026-10-14 | **Zod** como mecanismo de validação | atende o critério B2 ("mecanismo declarativo declarado nas dependências"); aplicado por pipe global |
-| 7 | 2026-10-14 | Dinheiro em **centavos inteiros** na lógica, `DECIMAL` no banco | o barema aceita os dois formatos; evita erro de ponto flutuante |
-| 8 | 2026-10-14 | Arredondamento "meio para longe do zero", **uma única vez** por cálculo | arredondamento parcial causa divergência (ex.: 14,775 → 14,78) |
-| 9 | 2026-10-14 | **pino** (nestjs-pino) para logs | diferencial B5: log real de HTTP, uma linha por requisição, sem `console.log` |
-| 10 | 2026-10-14 | Módulos em **inglês**, tabelas/colunas em **português snake_case** | rotas do enunciado são em inglês; nomes de tabela são exigência do enunciado em português |
-| 11 | 2026-10-14 | CORS restrito à origem de variável de ambiente | o enunciado não aceita `*` e o barema (B2, segurança e configuração) só pontua a prática completa |
-| 12 | 2026-10-14 | Docker Compose começa só com o **db**; api e web entram com os Dockerfiles | o README também deve funcionar sem Docker; serviços extras no compose só depois dos Dockerfiles |
-| 13 | 2026-10-14 | **Node 22 LTS** como única versão pedida ao avaliador | o 20 LTS saiu de suporte em abril/2026; o 22 é permitido pelo enunciado, atende ao Nest CLI 12 e está fixado em `.nvmrc` e no `engines` do `package.json` |
-| 14 | 2026-10-14 | Máquina de dev saneada antes de codar | pacote npm `node` (23.5.0) na home sequestrava `npm run`; PG17 local disputava a porta 5432 com o container — ambos corrigidos |
-| 15 | 2026-10-14 | Monólito modular em camadas, com `domain/` de funções puras | cada cálculo do B2 fica em um único lugar e as tabelas do enunciado viram testes unitários; DDD, hexagonal e CQRS descartados por excesso para 7 tabelas |
-| 16 | 2026-10-14 | Frontend por feature, com camadas `api → hooks → componentes` e `useAction` | atende F2 (nenhuma chamada direta em componente) e F3 (clique duplo com um só pedido); descartado Redux/Zustand, desnecessário para este escopo |
-| 17 | 2026-10-14 | `TransactionRunner` e lock de linha (`SELECT ... FOR UPDATE`) no caixa | garante atomicidade das 5 operações do B2 e evita caixa inconsistente em requisições simultâneas |
+A qualquer momento, para limpar completamente todos os dados e recriar as tabelas:
+```bash
+cd backend
+npx prisma migrate reset --force
+```
 
 ---
 
-## 5. Estado atual
+## 3. Passo a passo para instalar e executar
 
-- [x] PostgreSQL 16 sobe via `docker compose up -d db` (saudável)
-- [x] API NestJS sobe, prefixo `/api/v1`, CORS e logger pino configurados
-- [x] `GET /api/v1/health` responde `200 {"status":"ok"}`
-- [x] Log de requisição: uma linha com hora, método, caminho e status
-- [x] `npm run build`, `eslint .` e `prettier --check .` verdes
-- [ ] Schema Prisma com as 7 tabelas + primeira migration
-- [ ] Módulos de domínio (players, clubs, matches, standings, transfers, conditions)
-- [ ] Frontend (Vite + React + Tailwind/shadcn)
+### 3.1 Execução com Docker Compose (Comando único)
 
----
-
-## 6. Como executar (estado atual)
-
-Pré-requisitos: **Node.js 22 LTS**, **npm >= 10** e **Docker** com Compose. Confira a
-versão com `node -v` (esperado `22.x`); há um `.nvmrc` na raiz para quem usa `nvm`.
+Um único comando a partir da raiz constrói e sobe o banco de dados e a API backend:
 
 ```bash
-# 1. subir o banco
-docker compose up -d db
-
-# 2. configurar e subir a API
-cd backend
-cp .env.example .env
-npm install
-npx prisma generate
-npm run build
-npm run start
-
-# 3. conferir
-curl http://localhost:3000/api/v1/health
+docker compose up --build
 ```
 
-- **Origem da API**: `http://localhost:3000` (rotas sob `/api/v1`)
-- **Origem do frontend**: `http://localhost:5173` (liberada no CORS)
+- **Origem da API**: `http://localhost:3000` (rotas sob o prefixo `/api/v1`)
+- **Documentação Swagger (OpenAPI)**: `http://localhost:3000/api/docs`
+- **Origem do frontend**: `http://localhost:5173`
 
-### Variáveis de ambiente (`backend/.env`)
+### 3.2 Execução Local (Passo a passo no Ubuntu 24.04 / Linux / macOS / Windows)
 
-| Variável | Descrição |
-| --- | --- |
-| `PORT` | porta do servidor da API |
-| `DATABASE_URL` | conexão com o PostgreSQL |
-| `CORS_ORIGIN` | origem do frontend liberada no CORS |
-| `LOG_LEVEL` | nível dos logs (`trace`…`error`) |
+#### Terminal 1 — Banco de Dados:
+```bash
+docker compose up -d db
+```
 
-O exemplo completo está em `backend/.env.example`.
+#### Terminal 2 — Backend API:
+```bash
+cd backend
+cp .env.example .env
+npm ci
+npx prisma generate
+npx prisma migrate deploy
+npm run build
+npm run start
+```
+*A API estará pronta em `http://localhost:3000` e responderá a requisições com prefixo `/api/v1`.*
+
+#### Verificação de integridade da API:
+```bash
+curl http://localhost:3000/api/v1/health
+# Resposta esperada: {"status":"ok"}
+```
 
 ---
 
-## 7. Uso de IA
+## 4. Variáveis de ambiente
 
-Durante o desenvolvimento foi usada assistência de IA (agente de código) para explorar o
-repositório, levantar hipóteses de falha de ambiente e redigir código e documentação.
-Toda regra de negócio e toda decisão registrada na seção 4 passou por revisão e
-confirmação humana antes de ser incorporada.
+As configurações do backend são lidas exclusivamente de variáveis de ambiente gerenciadas pelo NestJS ConfigService e validadas na inicialização. O arquivo `.env.example` está disponível na pasta `backend/`:
+
+| Variável | Descrição | Exemplo padrão |
+| --- | --- | --- |
+| `PORT` | Porta HTTP em que a API escuta requisições | `3000` |
+| `DATABASE_URL` | URL de conexão PostgreSQL para o Prisma ORM | `postgresql://league:league@localhost:5432/league_marketplace?schema=public` |
+| `CORS_ORIGIN` | Origens autorizadas para CORS (separadas por vírgula, sem `*`) | `http://localhost:5173` |
+| `LOG_LEVEL` | Nível mínimo de logs da biblioteca Pino (`trace`, `debug`, `info`, `warn`, `error`) | `info` |
+| `NODE_ENV` | Ambiente de execução (`development`, `production`, `test`) | `development` |
+
+---
+
+## 5. Estrutura de pastas e lista de bibliotecas utilizadas
+
+### 5.1 Estrutura de pastas
+
+```text
+.
+├── backend/
+│   ├── prisma/
+│   │   ├── migrations/            # Migrações versionadas do banco de dados
+│   │   └── schema.prisma          # Schema com as 7 tabelas obrigatórias em snake_case
+│   ├── src/
+│   │   ├── clubs/                 # Módulo de Clubes (criação, listagem e detalhe de elenco)
+│   │   ├── core/
+│   │   │   ├── filters/           # GlobalExceptionFilter (formato unificado { message })
+│   │   │   └── pipes/             # ParsePositiveIntPipe (V8) e ZodValidationPipe (V1, V7)
+│   │   ├── domain/                # Núcleo de regras e fórmulas puras sem I/O
+│   │   │   ├── base-value.ts      # Cálculo de valor base e bônus de jovem promessa
+│   │   │   ├── contract.ts        # Cálculo de dias restantes e taxas de fidelidade
+│   │   │   ├── domain-calculator.service.ts # Serviço centralizador dos cálculos de domínio
+│   │   │   ├── duel.ts            # Simulação determinística de partidas e 6 duelos (RN20)
+│   │   │   ├── lineup.ts          # Validação de formações táticas (3-1, 2-2, 2-1-1, 1-2-1)
+│   │   │   ├── market-value.ts    # Cálculo de valor de mercado (condição, agilidade, idade)
+│   │   │   ├── money.ts           # Arredondamento half-away-from-zero e centavos
+│   │   │   ├── overall.ts         # Cálculo de overall por posição e pesos (RN06)
+│   │   │   └── sale.ts            # Cálculo de multa, lucro e comissão progressiva (RN16)
+│   │   ├── health/                # Endpoint GET /api/v1/health
+│   │   ├── league/                # Módulo da Liga (escalações, partidas e classificação)
+│   │   ├── market/                # Módulo de Mercado (compra, venda e histórico CSV)
+│   │   ├── players/               # Módulo de Jogadores (CRUD, busca, filtros e condição)
+│   │   ├── prisma/                # PrismaService com conexão gerenciada
+│   │   ├── shared/                # Clock, formatador ISO Brasília (-03:00) e comparador Unicode
+│   │   ├── app.module.ts          # Módulo raiz do NestJS
+│   │   └── main.ts                # Bootstrap, Swagger, CORS, pipes e logger Pino
+│   ├── test/                      # Testes e2e adicionais
+│   ├── Dockerfile                 # Multi-stage build para produção
+│   └── package.json
+├── docs/                          # Especificação oficial e barema da seleção
+├── docker-compose.yml             # Orquestração do PostgreSQL 16 e Backend API
+└── README.md
+```
+
+### 5.2 Lista de bibliotecas utilizadas e justificativas
+
+| Biblioteca | Versão | Justificativa de Uso |
+| --- | --- | --- |
+| `@nestjs/core`, `@nestjs/common`, `@nestjs/platform-express` | `^12.1.3` | Framework modular para TypeScript corporativo, com injeção de dependências, controle de ciclo de vida e desacoplamento de camadas exigido pelo barema (B2). |
+| `@nestjs/config` | `^12.0.1` | Gerenciamento centralizado de variáveis de ambiente validadas. |
+| `@prisma/client`, `prisma` | `^6.19.3` | ORM estável e tipado para modelagem relacional com PostgreSQL 16, suporte a transações interativas atômicas (`$transaction`) e migrações versionadas. |
+| `zod` | `^4.6.7` | Mecanismo declarativo de validação de esquemas de dados em tempo de execução, garantindo regras V1, V3, V4, V6 e V7 sem `if` solto em controllers. |
+| `pino`, `nestjs-pino`, `pino-http` | `^10.4.0`, `^5.3.1`, `^11.0.0` | Sistema de logs estruturados de alta performance com timestamp legível (`isoTime`), gerando exatamente uma linha por requisição contendo método, caminho e status HTTP (atende diferencial B5). |
+| `@nestjs/swagger` | `^12.0.0` | Geração interativa de documentação OpenAPI/Swagger em `/api/docs` (atende diferencial B5). |
+| `jest`, `ts-jest` | `^30.5.2`, `^29.4.14` | Framework de testes unitários e de integração configurado para execução não-interativa e sem mocks frágeis. |
+| `eslint`, `prettier` | `^9.0.0`, `^3.9.10` | Padronização estrita de código e verificação estática de formatação. |
+
+---
+
+## 6. Decisões e premissas
+
+1. **Centralização Matemática em Módulo de Domínio Puro (`src/domain/`)**: Todos os cálculos de valor de mercado, overall, taxa de compra, dias restantes, multas, comissão progressiva e duelos de partida foram implementados como funções puras sem dependência externa, consumidas por um `DomainCalculatorService` centralizado. Nenhum controller ou service duplica qualquer fórmula.
+2. **Arredondamento Monetário e Precisão**: Valores em moeda são calculados usando *half-away-from-zero* arredondados uma única vez no resultado final, evitando erros cumulativos de ponto flutuante. O limite de 50% do caixa para compra é verificado sobre a metade exata do caixa sem pré-arredondamento (RN13).
+3. **Tratamento Centralizado de Exceções**: O `GlobalExceptionFilter` intercepta todas as exceções e padroniza as respostas de erro no formato normativo `{ "message": "..." }`, eliminando stack traces e expondo status `400` para dados inválidos, `404` para recursos inexistentes e `409` para conflitos de regra de negócio.
+4. **IDs de Rotas e Regra V8**: Conforme a regra V8, identificadores de rota que não correspondam estritamente a inteiros positivos decimais sem zeros à esquerda ou que excedam `2147483647` são rejeitados com `404 Not Found` (implementado no `ParsePositiveIntPipe`).
+5. **Transações Atômicas**: Operações críticas de escrita (compra, venda, escalação tática, partida com gravação dos 6 duelos, e alteração de condição para DOENTE com desfalque) são executadas inteiramente dentro de `prisma.$transaction`.
+6. **Formatação de Datas com Fuso de Brasília (RN01)**: Datas recebidas pela API exigem o offset `-03:00` (`AAAA-MM-DDTHH:MM-03:00`), enquanto todas as respostas da API retornam com os segundos incluídos (`AAAA-MM-DDTHH:MM:SS-03:00`), formatadas pelo utilitário `formatIsoBrasilia`.
+7. **Exportação CSV (RN18)**: O endpoint `GET /clubs/:id/transactions/export` devolve `Content-Type: text/csv; charset=utf-8` em UTF-8 sem BOM com quebra de linha LF (`\n`), vírgula decimal para valores monetários e escape com aspas duplas duplicadas caso o nome contenha `;` ou `"`. Caso nenhuma transação coincida com os filtros, retorna apenas o cabeçalho finalizado em `\n`.
+
+---
+
+## 7. Funcionalidades não implementadas
+
+- **Nenhuma** (todos os 22 requisitos funcionais do backend B01–B22 foram implementados e validados por 116 testes automatizados).
+
+---
+
+## 8. Uso de inteligência artificial
+
+Durante o desenvolvimento foi utilizada assistência de inteligência artificial (agente de código) para navegação e auditoria na especificação do projeto, elaboração da suíte de testes unitários automatizados, validação de edge cases de arredondamento e refatoração de código com foco nas regras do barema. Toda regra de negócio, decisão técnica e linha de código foram validadas e testadas contra os documentos oficiais da seleção.
+
+---
+
+## 9. Diferenciais técnicos e comandos de verificação (B5)
+
+### 9.1 Testes automatizados (com conferência de valor de mercado)
+Executa toda a suíte de testes (116 testes em 14 suítes, cobrindo integralmente as fórmulas normativas):
+```bash
+cd backend
+npm test
+```
+
+### 9.2 Verificação de formatação e lint
+Executa a validação de linting e checagem de formatação do código fonte sem alterações:
+```bash
+cd backend
+npm run lint
+npm run format:check
+```
+
+### 9.3 Documentação Swagger interativa
+Após iniciar a API backend, acesse o navegador em:
+`http://localhost:3000/api/docs`
+
+### 9.4 Logs estruturados em uma única linha
+As requisições HTTP geram logs padronizados via Pino com data/hora ISO, método, rota e código de resposta:
+```text
+{"level":30,"time":"2026-10-17T14:35:00.000Z","req":{"method":"GET","url":"/api/v1/players?limit=10"},"res":{"statusCode":200},"responseTime":12}
+```
