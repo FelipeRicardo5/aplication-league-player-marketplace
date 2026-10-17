@@ -1,7 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, jogadores } from '@prisma/client';
 import { DomainCalculatorService } from '../domain/domain-calculator.service';
-import { Condition } from '../domain/market-value';
 import { Position } from '../domain/overall';
 import { PrismaService } from '../prisma/prisma.service';
 import { compareUnicodeNames, normalizeForSearch } from '../shared/text';
@@ -9,26 +8,9 @@ import { CreatePlayerDto } from './dto/create-player.dto';
 import { QueryPlayersDto } from './dto/query-players.dto';
 import { UpdateConditionDto } from './dto/update-condition.dto';
 import { UpdatePlayerDto } from './dto/update-player.dto';
+import { mapPlayerToResponse, PlayerResponse } from './player.mapper';
 
-export interface PlayerResponse {
-  id: number;
-  name: string;
-  position: Position;
-  agility: number;
-  age: number;
-  condition: Condition;
-  base_value: number;
-  market_value: number;
-  pace: number;
-  shooting: number;
-  passing: number;
-  dribbling: number;
-  defending: number;
-  physical: number;
-  potential: number;
-  overall: number;
-  club_id: number | null;
-}
+export { PlayerResponse };
 
 const TACTICAL_POSITION_ORDER: Record<Position, number> = {
   GOL: 0,
@@ -46,45 +28,7 @@ export class PlayersService {
   ) {}
 
   private mapToPlayerResponse(player: jogadores): PlayerResponse {
-    const position = player.posicao as Position;
-    const condition = player.condicao as Condition;
-    const baseValue = Number(player.valor_base);
-
-    const overall = this.calculator.calculateOverall(position, {
-      pace: player.velocidade,
-      shooting: player.finalizacao,
-      passing: player.passe,
-      dribbling: player.drible,
-      defending: player.defesa,
-      physical: player.fisico,
-    });
-
-    const marketValue = this.calculator.calculateMarketValue(
-      baseValue,
-      condition,
-      player.agilidade,
-      player.idade,
-    );
-
-    return {
-      id: player.id,
-      name: player.nome,
-      position,
-      agility: player.agilidade,
-      age: player.idade,
-      condition,
-      base_value: baseValue,
-      market_value: marketValue,
-      pace: player.velocidade,
-      shooting: player.finalizacao,
-      passing: player.passe,
-      dribbling: player.drible,
-      defending: player.defesa,
-      physical: player.fisico,
-      potential: player.potencial,
-      overall,
-      club_id: player.clube_id,
-    };
+    return mapPlayerToResponse(player);
   }
 
   async create(dto: CreatePlayerDto): Promise<PlayerResponse> {

@@ -4,7 +4,7 @@ import { DomainCalculatorService } from '../domain/domain-calculator.service';
 import { SetLineupDto } from './dto/set-lineup.dto';
 import { Position } from '../domain/overall';
 import { Formation } from '../domain/lineup';
-import { Condition } from '../domain/market-value';
+import { mapPlayerToResponse } from '../players/player.mapper';
 
 @Injectable()
 export class LineupService {
@@ -90,44 +90,7 @@ export class LineupService {
       }
     });
 
-    const formattedPlayers = sorted.map((item) => {
-      const p = item.raw;
-      const overall = this.calculator.calculateOverall(p.posicao as Position, {
-        pace: p.velocidade,
-        shooting: p.finalizacao,
-        passing: p.passe,
-        dribbling: p.drible,
-        defending: p.defesa,
-        physical: p.fisico,
-      });
-
-      const marketValue = this.calculator.calculateMarketValue(
-        Number(p.valor_base),
-        p.condicao as Condition,
-        p.agilidade,
-        p.idade,
-      );
-
-      return {
-        id: p.id,
-        name: p.nome,
-        position: p.posicao,
-        agility: p.agilidade,
-        age: p.idade,
-        condition: p.condicao,
-        base_value: Number(p.valor_base),
-        market_value: marketValue,
-        pace: p.velocidade,
-        shooting: p.finalizacao,
-        passing: p.passe,
-        dribbling: p.drible,
-        defending: p.defesa,
-        physical: p.fisico,
-        potential: p.potencial,
-        overall,
-        club_id: p.clube_id,
-      };
-    });
+    const formattedPlayers = sorted.map((item) => mapPlayerToResponse(item.raw));
 
     return {
       club_id: club.id,
@@ -181,44 +144,7 @@ export class LineupService {
 
     const isComplete = sorted.length === 5;
 
-    const formattedPlayers = sorted.map((item) => {
-      const p = item.raw;
-      const overall = this.calculator.calculateOverall(p.posicao as Position, {
-        pace: p.velocidade,
-        shooting: p.finalizacao,
-        passing: p.passe,
-        dribbling: p.drible,
-        defending: p.defesa,
-        physical: p.fisico,
-      });
-
-      const marketValue = this.calculator.calculateMarketValue(
-        Number(p.valor_base),
-        p.condicao as Condition,
-        p.agilidade,
-        p.idade,
-      );
-
-      return {
-        id: p.id,
-        name: p.nome,
-        position: p.posicao,
-        agility: p.agilidade,
-        age: p.idade,
-        condition: p.condicao,
-        base_value: Number(p.valor_base),
-        market_value: marketValue,
-        pace: p.velocidade,
-        shooting: p.finalizacao,
-        passing: p.passe,
-        dribbling: p.drible,
-        defending: p.defesa,
-        physical: p.fisico,
-        potential: p.potencial,
-        overall,
-        club_id: p.clube_id,
-      };
-    });
+    const formattedPlayers = sorted.map((item) => mapPlayerToResponse(item.raw));
 
     return {
       club_id: club.id,

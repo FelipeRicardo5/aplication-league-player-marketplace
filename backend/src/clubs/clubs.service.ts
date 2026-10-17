@@ -6,6 +6,7 @@ import { Position } from '../domain/overall';
 import { PrismaService } from '../prisma/prisma.service';
 import { formatIsoBrasilia } from '../shared/clock';
 import { compareUnicodeNames, normalizeClubName } from '../shared/text';
+import { mapPlayerToResponse, PlayerResponse } from '../players/player.mapper';
 import { CreateClubDto } from './dto/create-club.dto';
 import { QueryClubsDto } from './dto/query-clubs.dto';
 
@@ -25,24 +26,7 @@ export interface ClubPlayerContract {
   penalty_rate: number;
 }
 
-export interface ClubPlayerResponse {
-  id: number;
-  name: string;
-  position: Position;
-  agility: number;
-  age: number;
-  condition: Condition;
-  base_value: number;
-  market_value: number;
-  pace: number;
-  shooting: number;
-  passing: number;
-  dribbling: number;
-  defending: number;
-  physical: number;
-  potential: number;
-  overall: number;
-  club_id: number | null;
+export interface ClubPlayerResponse extends PlayerResponse {
   contract?: ClubPlayerContract;
 }
 
@@ -190,27 +174,8 @@ export class ClubsService {
     let squadValue = 0;
 
     const mappedPlayers: ClubPlayerResponse[] = club.jogadores.map((player) => {
-      const position = player.posicao as Position;
-      const condition = player.condicao as Condition;
-      const baseValue = Number(player.valor_base);
-
-      const overall = this.calculator.calculateOverall(position, {
-        pace: player.velocidade,
-        shooting: player.finalizacao,
-        passing: player.passe,
-        dribbling: player.drible,
-        defending: player.defesa,
-        physical: player.fisico,
-      });
-
-      const marketValue = this.calculator.calculateMarketValue(
-        baseValue,
-        condition,
-        player.agilidade,
-        player.idade,
-      );
-
-      squadValue += marketValue;
+      const baseResponse = mapPlayerToResponse(player);
+      squadValue += baseResponse.market_value;
 
       let contract: ClubPlayerContract | undefined;
       const activeContract = player.contratos[0];
@@ -230,23 +195,7 @@ export class ClubsService {
       }
 
       return {
-        id: player.id,
-        name: player.nome,
-        position,
-        agility: player.agilidade,
-        age: player.idade,
-        condition,
-        base_value: baseValue,
-        market_value: marketValue,
-        pace: player.velocidade,
-        shooting: player.finalizacao,
-        passing: player.passe,
-        dribbling: player.drible,
-        defending: player.defesa,
-        physical: player.fisico,
-        potential: player.potencial,
-        overall,
-        club_id: player.clube_id,
+        ...baseResponse,
         contract,
       };
     });
