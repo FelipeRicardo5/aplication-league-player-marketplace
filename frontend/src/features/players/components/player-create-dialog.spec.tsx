@@ -33,11 +33,12 @@ function renderComponent(open = true, onOpenChange = vi.fn()) {
   };
 }
 
-describe('PlayerCreateDialog Component (Figma J05/J06)', () => {
-  it('renders modal header, position toggle buttons and live preview panel', () => {
+describe('PlayerCreateDialog Component (Figma node 52-128117)', () => {
+  it('renders modal header, position toggle buttons and indicators layout matching Figma', () => {
     renderComponent(true);
 
     expect(screen.getByRole('heading', { name: /Cadastrar Novo Jogador/i })).toBeInTheDocument();
+    expect(screen.getByText('Novo jogador')).toBeInTheDocument();
 
     // 5 position buttons
     expect(screen.getByRole('radio', { name: /Goleiro/i })).toBeInTheDocument();
@@ -52,11 +53,12 @@ describe('PlayerCreateDialog Component (Figma J05/J06)', () => {
       'true',
     );
 
-    // Live preview elements
-    expect(screen.getByText(/Prévia dos Atributos/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tempo Real/i)).toBeInTheDocument();
+    // Labels & indicators
+    expect(screen.getByText('Valor base (moedas)')).toBeInTheDocument();
+    expect(screen.getByText('Indicadores técnicos')).toBeInTheDocument();
+    expect(screen.getByText(/Prévia dos atributos/i)).toBeInTheDocument();
     expect(screen.getByText(/^Overall$/i)).toBeInTheDocument();
-    expect(screen.getByText(/^Valor Base$/i)).toBeInTheDocument();
+    expect(screen.getByText('O jogador começa livre e Apto.')).toBeInTheDocument();
   });
 
   it('updates position selection when clicking another position toggle button', async () => {
@@ -76,27 +78,27 @@ describe('PlayerCreateDialog Component (Figma J05/J06)', () => {
   it('displays warning and disables submit when attribute sum exceeds 480', async () => {
     renderComponent(true);
 
-    const paceInput = screen.getByLabelText(/Velocidade/i);
+    const paceInput = screen.getByLabelText(/^Velocidade$/i);
     fireEvent.change(paceInput, { target: { value: '95' } });
 
-    const shootInput = screen.getByLabelText(/Finalização/i);
+    const shootInput = screen.getByLabelText(/^Finalização$/i);
     fireEvent.change(shootInput, { target: { value: '95' } });
 
-    const passInput = screen.getByLabelText(/Passe/i);
+    const passInput = screen.getByLabelText(/^Passe$/i);
     fireEvent.change(passInput, { target: { value: '95' } });
 
-    const dribInput = screen.getByLabelText(/Drible/i);
+    const dribInput = screen.getByLabelText(/^Drible$/i);
     fireEvent.change(dribInput, { target: { value: '95' } });
 
-    const defInput = screen.getByLabelText(/Defesa/i);
+    const defInput = screen.getByLabelText(/^Defesa$/i);
     fireEvent.change(defInput, { target: { value: '95' } });
 
-    const physInput = screen.getByLabelText(/Físico/i);
+    const physInput = screen.getByLabelText(/^Físico$/i);
     fireEvent.change(physInput, { target: { value: '95' } });
 
     // 95 * 6 = 570 > 480
     await waitFor(() => {
-      expect(screen.getByText(/excede o limite máximo de 480/i)).toBeInTheDocument();
+      expect(screen.getByText(/excede 480/i)).toBeInTheDocument();
     });
 
     const submitBtn = screen.getByRole('button', { name: /Salvar Jogador/i });

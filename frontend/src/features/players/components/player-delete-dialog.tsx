@@ -30,7 +30,7 @@ export function PlayerDeleteDialog({ player, open, onOpenChange }: PlayerDeleteD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md p-6">
         <DialogHeader>
           <div className="flex items-center gap-2 text-destructive mb-1">
             <AlertTriangle className="h-5 w-5 text-[#BF000F]" />
@@ -41,22 +41,29 @@ export function PlayerDeleteDialog({ player, open, onOpenChange }: PlayerDeleteD
           </DialogDescription>
         </DialogHeader>
 
-        <p className="text-sm text-muted-foreground">
+        <p className="text-xs text-muted-foreground my-2">
           Esta operação realiza a exclusão lógica do jogador. Ele não aparecerá mais em listagens ou
           no mercado, mas seus dados históricos em transações e partidas anteriores permanecerão
           preservados para auditoria da liga.
         </p>
 
-        <DialogFooter className="gap-2">
+        <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
           <Button
             type="button"
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isPending}
+            className="rounded-md"
           >
             Cancelar
           </Button>
-          <Button type="button" variant="destructive" onClick={handleDelete} isLoading={isPending}>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={handleDelete}
+            isLoading={isPending}
+            className="rounded-md"
+          >
             Confirmar Exclusão
           </Button>
         </DialogFooter>

@@ -14,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
 import { useUpdateConditionMutation } from '../hooks/use-players';
 import type { Player } from '../types';
+import { cn } from '@/lib/utils';
 
 interface PlayerConditionDialogProps {
   player: Player | null;
@@ -92,32 +93,62 @@ export function PlayerConditionDialog({ player, open, onOpenChange }: PlayerCond
             onValueChange={(val) =>
               setSelectedCondition(val as 'APTO' | 'MAL_CONDICIONADO' | 'DOENTE')
             }
-            className="space-y-2"
+            className="space-y-2.5"
           >
-            <div className="flex items-start space-x-3 rounded-lg border border-border p-3 hover:bg-accent/40 cursor-pointer">
+            <div
+              className={cn(
+                'flex items-start space-x-3 rounded-lg border p-3 cursor-pointer transition-all duration-150',
+                selectedCondition === 'APTO'
+                  ? 'border-emerald-300 bg-emerald-50/50 shadow-2xs ring-1 ring-emerald-500/20'
+                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
+              )}
+            >
               <RadioGroupItem value="APTO" id="cond-apto" className="mt-0.5" />
               <Label htmlFor="cond-apto" className="flex-1 cursor-pointer">
-                <span className="font-semibold text-sm text-[#016630]">Apto</span>
+                <div className="flex items-center gap-1.5 font-semibold text-sm text-[#016630]">
+                  <span className="h-2 w-2 rounded-full bg-[#016630]" />
+                  <span>Apto</span>
+                </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Pronto para atuar em partidas com rendimento total.
                 </p>
               </Label>
             </div>
 
-            <div className="flex items-start space-x-3 rounded-lg border border-border p-3 hover:bg-accent/40 cursor-pointer">
+            <div
+              className={cn(
+                'flex items-start space-x-3 rounded-lg border p-3 cursor-pointer transition-all duration-150',
+                selectedCondition === 'MAL_CONDICIONADO'
+                  ? 'border-amber-300 bg-amber-50/50 shadow-2xs ring-1 ring-amber-500/20'
+                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
+              )}
+            >
               <RadioGroupItem value="MAL_CONDICIONADO" id="cond-mal" className="mt-0.5" />
               <Label htmlFor="cond-mal" className="flex-1 cursor-pointer">
-                <span className="font-semibold text-sm text-[#953D00]">Mal condicionado</span>
+                <div className="flex items-center gap-1.5 font-semibold text-sm text-[#953D00]">
+                  <span className="h-2 w-2 rounded-full bg-[#953D00]" />
+                  <span>Mal condicionado</span>
+                </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Pode atuar, mas sofre desconto de 15% em seus atributos durante duelos de partida.
                 </p>
               </Label>
             </div>
 
-            <div className="flex items-start space-x-3 rounded-lg border border-border p-3 hover:bg-accent/40 cursor-pointer">
+            <div
+              className={cn(
+                'flex items-start space-x-3 rounded-lg border p-3 cursor-pointer transition-all duration-150',
+                selectedCondition === 'DOENTE'
+                  ? 'border-rose-300 bg-rose-50/50 shadow-2xs ring-1 ring-rose-500/20'
+                  : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50',
+              )}
+            >
               <RadioGroupItem value="DOENTE" id="cond-doente" className="mt-0.5" />
               <Label htmlFor="cond-doente" className="flex-1 cursor-pointer">
-                <span className="font-semibold text-sm text-[#BF000F]">Doente</span>
+                <div className="flex items-center gap-1.5 font-semibold text-sm text-[#BF000F]">
+                  <span className="h-2 w-2 rounded-full bg-[#BF000F]" />
+                  <span>Doente</span>
+                </div>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Impossibilitado de jogar. É removido da escalação se titular.
                 </p>
@@ -125,12 +156,13 @@ export function PlayerConditionDialog({ player, open, onOpenChange }: PlayerCond
             </div>
           </RadioGroup>
 
-          <DialogFooter className="gap-2">
+          <DialogFooter className="gap-2 pt-2 border-t border-slate-100">
             <Button
               type="button"
               variant="outline"
               onClick={() => onOpenChange(false)}
               disabled={isPending}
+              className="rounded-md"
             >
               Cancelar
             </Button>
@@ -139,6 +171,7 @@ export function PlayerConditionDialog({ player, open, onOpenChange }: PlayerCond
               variant="default"
               isLoading={isPending}
               disabled={isTransitionFromDoenteToApto}
+              className="rounded-md"
             >
               Confirmar Alteração
             </Button>

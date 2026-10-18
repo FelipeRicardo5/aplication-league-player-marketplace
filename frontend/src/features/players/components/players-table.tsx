@@ -106,59 +106,11 @@ export function PlayersTable({
   };
 
   const getPositionBadge = (pos: Position) => {
-    switch (pos) {
-      case 'GOL':
-        return (
-          <Badge
-            variant="outline"
-            className="bg-amber-50/80 text-amber-700 border-amber-200/90 font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md"
-          >
-            GOL
-          </Badge>
-        );
-      case 'ZAG':
-        return (
-          <Badge
-            variant="outline"
-            className="bg-emerald-50/80 text-emerald-700 border-emerald-200/90 font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md"
-          >
-            ZAG
-          </Badge>
-        );
-      case 'LAT':
-        return (
-          <Badge
-            variant="outline"
-            className="bg-teal-50/80 text-teal-700 border-teal-200/90 font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md"
-          >
-            LAT
-          </Badge>
-        );
-      case 'MEI':
-        return (
-          <Badge
-            variant="outline"
-            className="bg-blue-50/80 text-blue-700 border-blue-200/90 font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md"
-          >
-            MEI
-          </Badge>
-        );
-      case 'ATA':
-        return (
-          <Badge
-            variant="outline"
-            className="bg-purple-50/80 text-purple-700 border-purple-200/90 font-mono text-[11px] font-semibold px-2 py-0.5 rounded-md"
-          >
-            ATA
-          </Badge>
-        );
-      default:
-        return (
-          <Badge variant="secondary" className="font-mono text-[11px] rounded-md">
-            {pos}
-          </Badge>
-        );
-    }
+    return (
+      <span className="inline-flex items-center justify-center font-sans text-xs font-medium text-slate-700 px-2 py-0.5 rounded-md border border-slate-200 bg-white shadow-2xs">
+        {pos}
+      </span>
+    );
   };
 
   return (
@@ -359,7 +311,7 @@ export function PlayersTable({
 
                 {/* 3. Overall */}
                 <TableCell>
-                  <span className="inline-flex items-center justify-center rounded-md bg-blue-50 text-blue-600 font-bold px-2 py-0.5 text-xs font-mono border border-blue-100/90 shadow-2xs">
+                  <span className="font-sans font-bold text-sm text-slate-900 tabular-nums">
                     {player.overall}
                   </span>
                 </TableCell>
@@ -367,7 +319,7 @@ export function PlayersTable({
                 {/* 4. Agilidade (Número + Mini Barra Gráfica) */}
                 <TableCell>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs font-semibold text-slate-800 w-6 tabular-nums">
+                    <span className="font-sans text-xs font-semibold text-slate-800 w-6 tabular-nums">
                       {player.agility}
                     </span>
                     <div className="h-1.5 w-14 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-200/50">
@@ -380,21 +332,21 @@ export function PlayersTable({
                 </TableCell>
 
                 {/* 5. Idade */}
-                <TableCell className="text-xs font-mono text-slate-700 tabular-nums">
-                  {player.age} anos
+                <TableCell className="text-xs font-sans text-slate-700 tabular-nums">
+                  {player.age}
                 </TableCell>
 
                 {/* 6. Condição */}
                 <TableCell>{getConditionBadge(player.condition)}</TableCell>
 
                 {/* 7. Valor Base */}
-                <TableCell className="text-xs font-mono tabular-nums text-muted-foreground">
-                  {formatCurrency(player.base_value, true)}
+                <TableCell className="text-xs font-sans tabular-nums text-slate-600">
+                  {formatCurrency(player.base_value, false)}
                 </TableCell>
 
                 {/* 8. Valor de Mercado */}
-                <TableCell className="font-semibold text-sm font-mono tabular-nums text-foreground">
-                  {formatCurrency(player.market_value, true)}
+                <TableCell className="font-bold text-sm font-sans tabular-nums text-slate-900">
+                  {formatCurrency(player.market_value, false)}
                 </TableCell>
 
                 {/* 9. Clube */}

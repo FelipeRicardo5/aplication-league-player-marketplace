@@ -44,7 +44,6 @@ function renderComponent(props: Partial<Parameters<typeof PlayerDetailSheet>[0]>
     onEdit: vi.fn(),
     onChangeCondition: vi.fn(),
     onBuy: vi.fn(),
-    onDelete: vi.fn(),
     ...props,
   };
 
@@ -58,32 +57,41 @@ function renderComponent(props: Partial<Parameters<typeof PlayerDetailSheet>[0]>
   };
 }
 
-describe('PlayerDetailSheet Component (Figma J12 / FIGMA-013)', () => {
-  it('renders 4 KPI cards (Overall, Agilidade, Idade, Potencial)', () => {
+describe('PlayerDetailSheet Component (Figma J12 / node 52-135991)', () => {
+  it('renders 4 KPI cards (Valor de mercado, Valor base, Overall, Potencial)', () => {
     renderComponent();
 
     expect(screen.getByRole('heading', { name: 'Vinicius Júnior' })).toBeInTheDocument();
 
     // 4 KPI cards
+    expect(screen.getByText(/^Valor de mercado$/i)).toBeInTheDocument();
+    expect(screen.getByText('120,00')).toBeInTheDocument();
+    expect(screen.getByText(/Calculado automaticamente/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/^Valor base$/i)).toBeInTheDocument();
+    expect(screen.getByText('80,00')).toBeInTheDocument();
+    expect(screen.getByText(/Calculado no cadastro/i)).toBeInTheDocument();
+
     expect(screen.getByText(/^Overall$/i)).toBeInTheDocument();
     expect(screen.getByText('89')).toBeInTheDocument();
-
-    expect(screen.getAllByText(/^Agilidade$/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getAllByText('92').length).toBeGreaterThanOrEqual(1);
-
-    expect(screen.getByText(/^Idade$/i)).toBeInTheDocument();
-    expect(screen.getByText('23')).toBeInTheDocument();
+    expect(screen.getByText(/Calculado pela posição/i)).toBeInTheDocument();
 
     expect(screen.getByText(/^Potencial$/i)).toBeInTheDocument();
     expect(screen.getByText('96')).toBeInTheDocument();
+    expect(screen.getByText(/Informado no cadastro/i)).toBeInTheDocument();
   });
 
-  it('renders financial and contractual data', () => {
+  it('renders player info card with Idade, Agilidade, and Clube', () => {
     renderComponent();
 
-    expect(screen.getByText(/Valor Base/i)).toBeInTheDocument();
-    expect(screen.getByText(/Valor de Mercado/i)).toBeInTheDocument();
-    expect(screen.getByText(/Agente Livre/i)).toBeInTheDocument();
+    expect(screen.getByText(/^Idade$/i)).toBeInTheDocument();
+    expect(screen.getByText('23 anos')).toBeInTheDocument();
+
+    expect(screen.getByText(/^Agilidade$/i)).toBeInTheDocument();
+    expect(screen.getByText('92')).toBeInTheDocument();
+
+    expect(screen.getByText(/^Clube$/i)).toBeInTheDocument();
+    expect(screen.getAllByText('Livre').length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders technical attributes with potential indicator', () => {
@@ -97,31 +105,26 @@ describe('PlayerDetailSheet Component (Figma J12 / FIGMA-013)', () => {
     // Potential ceiling indicator
     const ceilingIndicators = screen.getAllByTitle(/Teto de potencial: 96/i);
     expect(ceilingIndicators.length).toBeGreaterThan(0);
-    expect(ceilingIndicators[0]).toHaveStyle({
-      backgroundColor: 'rgba(21, 93, 252, 0.22)',
-    });
   });
 
-  it('renders quick action buttons and fires callbacks', () => {
+  it('renders quick action buttons (Editar, Alterar condição, Comprar) and fires callbacks', () => {
     const { props } = renderComponent();
 
     const editBtn = screen.getByRole('button', { name: /Editar/i });
     fireEvent.click(editBtn);
     expect(props.onEdit).toHaveBeenCalledWith(mockPlayerFree);
 
-    const conditionBtn = screen.getByRole('button', { name: /Condição/i });
+    const conditionBtn = screen.getByRole('button', { name: /Alterar condição/i });
     fireEvent.click(conditionBtn);
     expect(props.onChangeCondition).toHaveBeenCalledWith(mockPlayerFree);
 
-    const buyBtn = screen.getByRole('button', { name: /Comprar Jogador/i });
+    const buyBtn = screen.getByRole('button', { name: /Comprar/i });
     fireEvent.click(buyBtn);
     expect(props.onBuy).toHaveBeenCalledWith(mockPlayerFree);
   });
 
-  it('renders disabled delete button when player belongs to a club', () => {
+  it('renders club information when player belongs to a club', () => {
     renderComponent({ player: mockPlayerWithClub });
-
-    const deleteBtn = screen.getByRole('button', { name: /Excluir \(Indisponível: tem clube\)/i });
-    expect(deleteBtn).toBeDisabled();
+    expect(screen.getByText(/^Clube$/i)).toBeInTheDocument();
   });
 });

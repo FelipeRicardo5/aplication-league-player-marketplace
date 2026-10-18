@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, RotateCcw } from 'lucide-react';
+import { Search, RotateCcw, Shirt, HeartPulse, Shield, User, Tag } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -137,7 +137,7 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
         <div className="relative flex-1 min-w-[220px] max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
           <Input
-            placeholder="Buscar por nome (mín. 2 letras)..."
+            placeholder="Buscar por nome"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-9 h-8.5 text-xs bg-slate-50/70 border-slate-200 rounded-lg placeholder:text-slate-400"
@@ -146,7 +146,7 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
         </div>
 
         {/* Dropdown: Posição */}
-        <div className="w-[125px]">
+        <div className="w-[130px]">
           <Select
             value={filters.position || 'ALL'}
             onValueChange={(val) =>
@@ -157,7 +157,10 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
               aria-label="Filtrar por posição"
               className="h-8.5 text-xs bg-slate-50/70 border-slate-200 rounded-lg cursor-pointer"
             >
-              <SelectValue placeholder="Posição" />
+              <div className="flex items-center gap-1.5 truncate">
+                <Shirt className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                <SelectValue placeholder="Posição" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL" className="text-xs">
@@ -197,7 +200,10 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
               aria-label="Filtrar por condição física"
               className="h-8.5 text-xs bg-slate-50/70 border-slate-200 rounded-lg cursor-pointer"
             >
-              <SelectValue placeholder="Condição" />
+              <div className="flex items-center gap-1.5 truncate">
+                <HeartPulse className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                <SelectValue placeholder="Condição" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL" className="text-xs">
@@ -230,7 +236,10 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
                 filters.free === true && 'opacity-50 cursor-not-allowed',
               )}
             >
-              <SelectValue placeholder="Clube" />
+              <div className="flex items-center gap-1.5 truncate">
+                <Shield className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                <SelectValue placeholder="Clube" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL" className="text-xs">
@@ -252,7 +261,10 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
               aria-label="Filtrar por faixa de idade"
               className="h-8.5 text-xs bg-slate-50/70 border-slate-200 rounded-lg cursor-pointer"
             >
-              <SelectValue placeholder="Faixa de idade" />
+              <div className="flex items-center gap-1.5 truncate">
+                <User className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                <SelectValue placeholder="Idade" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL" className="text-xs">
@@ -275,13 +287,16 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
         </div>
 
         {/* Dropdown: Faixa de Valor de Mercado */}
-        <div className="w-[155px]">
+        <div className="w-[170px]">
           <Select value={getValueRangeValue()} onValueChange={handleValueRangeChange}>
             <SelectTrigger
               aria-label="Filtrar por valor de mercado"
               className="h-8.5 text-xs bg-slate-50/70 border-slate-200 rounded-lg cursor-pointer"
             >
-              <SelectValue placeholder="Faixa de valor" />
+              <div className="flex items-center gap-1.5 truncate">
+                <Tag className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+                <SelectValue placeholder="Valor de mercado" />
+              </div>
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL" className="text-xs">
