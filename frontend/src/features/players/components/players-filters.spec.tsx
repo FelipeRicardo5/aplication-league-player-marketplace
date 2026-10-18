@@ -121,4 +121,21 @@ describe('PlayersFilters Component', () => {
     expect(onReset).toHaveBeenCalledTimes(1);
     expect(input.value).toBe('');
   });
+
+  it('renders age and market value range filters properly', () => {
+    const onFilterChange = vi.fn();
+    const onReset = vi.fn();
+
+    render(
+      <PlayersFilters
+        filters={{ page: 1, limit: 10 }}
+        onFilterChange={onFilterChange}
+        onReset={onReset}
+      />,
+      { wrapper: createWrapper() },
+    );
+
+    expect(screen.getByLabelText('Filtrar por faixa de idade')).toBeInTheDocument();
+    expect(screen.getByLabelText('Filtrar por valor de mercado')).toBeInTheDocument();
+  });
 });

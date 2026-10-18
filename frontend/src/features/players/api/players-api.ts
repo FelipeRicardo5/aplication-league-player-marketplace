@@ -24,6 +24,18 @@ export async function fetchPlayers(params: QueryPlayersParams): Promise<PlayersL
   if (params.club_id) {
     cleanParams.club_id = params.club_id;
   }
+  if (params.min_age !== undefined) {
+    cleanParams.min_age = params.min_age;
+  }
+  if (params.max_age !== undefined) {
+    cleanParams.max_age = params.max_age;
+  }
+  if (params.min_value !== undefined) {
+    cleanParams.min_value = params.min_value;
+  }
+  if (params.max_value !== undefined) {
+    cleanParams.max_value = params.max_value;
+  }
   if (params.sort) {
     cleanParams.sort = params.sort;
   }
