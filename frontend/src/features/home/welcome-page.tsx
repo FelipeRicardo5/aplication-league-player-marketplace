@@ -17,6 +17,8 @@ import { usePlayersQuery } from '@/features/players/hooks/use-players';
 import { useClubsQuery } from '@/features/clubs/hooks/use-clubs';
 import { useMatchesQuery, useStandingsQuery } from '@/features/league/hooks/use-league';
 import { Button } from '@/components/ui/button';
+import { BrandLogo } from '@/components/layout/brand-logo';
+
 
 export function WelcomePage() {
   const navigate = useNavigate();
@@ -110,9 +112,7 @@ export function WelcomePage() {
         <div className="relative z-10 flex flex-col items-center text-center space-y-6 md:space-y-7">
           {/* Monograma e Nome Passe */}
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground font-bold text-2xl shadow-xs">
-              P
-            </div>
+            <BrandLogo className="h-11 w-11 shadow-xs" />
             <span className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
               Passe
             </span>
