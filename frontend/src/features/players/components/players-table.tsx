@@ -424,7 +424,7 @@ export function PlayersTable({
                     {isFree && (
                       <Button
                         variant="outline"
-                        size="xs"
+                        size="sm"
                         onClick={() => onBuy(player)}
                         className="h-7 px-2 text-xs font-medium text-blue-600 border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:text-blue-700 gap-1 rounded-md cursor-pointer transition-colors"
                         title="Comprar jogador para um clube"
