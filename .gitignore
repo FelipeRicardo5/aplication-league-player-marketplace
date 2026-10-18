@@ -7,8 +7,12 @@ coverage/
 .env
 .env.local
 
-# Sistema
+# Sistema e regras locais
 *.log
 .DS_Store
 Thumbs.db
 /docs/challenge
+AGENTS.md
+playwright-report/
+test-results/
+blob-report/
