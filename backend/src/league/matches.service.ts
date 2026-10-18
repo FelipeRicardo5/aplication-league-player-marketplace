@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, NotFoundException, ConflictException, Inject, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { DomainCalculatorService } from '../domain/domain-calculator.service';
 import { Clock, SystemClock, formatIsoBrasilia } from '../shared/clock';
@@ -15,7 +15,7 @@ export class MatchesService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly calculator: DomainCalculatorService,
-    clock?: Clock,
+    @Optional() @Inject('CLOCK') clock?: Clock,
   ) {
     this.clock = clock ?? new SystemClock();
   }
