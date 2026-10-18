@@ -82,6 +82,15 @@ curl http://localhost:3000/api/v1/health
 # Resposta esperada: {"status":"ok"}
 ```
 
+#### Terminal 3 — Frontend Web (React + Vite):
+```bash
+cd frontend
+cp .env.example .env
+npm install
+npm run dev
+```
+*A aplicação web estará acessível no navegador em `http://localhost:5173`.*
+
 ---
 
 ## 4. Variáveis de ambiente
@@ -204,3 +213,24 @@ As requisições HTTP geram logs padronizados via Pino com data/hora ISO, métod
 ```text
 {"level":30,"time":"2026-10-17T14:35:00.000Z","req":{"method":"GET","url":"/api/v1/players?limit=10"},"res":{"statusCode":200},"responseTime":12}
 ```
+
+### 9.5 Testes e verificação do Frontend (Vitest e Playwright)
+Executa toda a suíte de testes unitários e de regras de componentes do frontend (46 testes):
+```bash
+cd frontend
+npm test
+```
+
+Executa a validação estática de linting e checagem de formatação do frontend:
+```bash
+cd frontend
+npm run lint
+npm run format:check
+```
+
+Executa a suíte de testes ponta a ponta (E2E) com Playwright (desktop e mobile 375 px):
+```bash
+cd frontend
+npm run test:e2e
+```
+
