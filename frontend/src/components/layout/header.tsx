@@ -1,4 +1,5 @@
 import { Menu } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 
 interface HeaderProps {
@@ -19,12 +20,15 @@ export function Header({ onOpenMobileMenu }: HeaderProps) {
       </Button>
 
       {/* Brand in mobile */}
-      <div className="flex items-center gap-2 md:hidden">
+      <Link
+        to="/"
+        className="flex items-center gap-2 md:hidden hover:opacity-85 transition-opacity"
+      >
         <div className="flex h-7 w-7 items-center justify-center rounded-md bg-primary text-primary-foreground font-bold text-sm">
           P
         </div>
         <span className="font-semibold text-sm text-foreground">Passe</span>
-      </div>
+      </Link>
 
       <div className="flex-1" />
 

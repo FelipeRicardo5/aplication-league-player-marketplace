@@ -1,5 +1,6 @@
-import { createBrowserRouter, Navigate } from 'react-router-dom';
+import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '@/components/layout/app-layout';
+import { WelcomePage } from '@/features/home/welcome-page';
 import { PlayersPage } from '@/features/players/pages/players-page';
 import { ClubsPage } from '@/features/clubs/pages/clubs-page';
 import { ClubDetailPage } from '@/features/clubs/pages/club-detail-page';
@@ -10,12 +11,11 @@ import { NotFoundPage } from '@/components/feedback/not-found-page';
 export const router = createBrowserRouter([
   {
     path: '/',
+    element: <WelcomePage />,
+  },
+  {
     element: <AppLayout />,
     children: [
-      {
-        index: true,
-        element: <Navigate to="/players" replace />,
-      },
       {
         path: 'players',
         element: <PlayersPage />,

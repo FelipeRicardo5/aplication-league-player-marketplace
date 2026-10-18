@@ -39,7 +39,11 @@ export function Sidebar({ onItemClick, className }: SidebarProps) {
       )}
     >
       {/* Brand Header */}
-      <div className="flex items-center gap-3 px-2 py-3 border-b border-border mb-4">
+      <NavLink
+        to="/"
+        onClick={onItemClick}
+        className="flex items-center gap-3 px-2 py-3 border-b border-border mb-4 hover:opacity-85 transition-opacity cursor-pointer"
+      >
         <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground font-bold text-lg shadow-xs">
           P
         </div>
@@ -49,7 +53,7 @@ export function Sidebar({ onItemClick, className }: SidebarProps) {
           </h1>
           <p className="text-xs text-muted-foreground">Liga de Futebol</p>
         </div>
-      </div>
+      </NavLink>
 
       {/* Nav items */}
       <div className="flex-1 overflow-y-auto space-y-6 pr-1">

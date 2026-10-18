@@ -11,24 +11,32 @@ async function navigateTo(page: Page, path: string) {
 
 test.describe('Marketplace da Liga - Fluxos Principais E2E', () => {
   test('Fluxo 1: Navegação principal, layout e responsividade', async ({ page }) => {
-    // 1. Acessar a raiz da aplicação - deve redirecionar para /players
+    // 1. Acessar a raiz da aplicação - deve renderizar a Tela Inicial (WelcomePage)
     await page.goto('/');
+    await expect(page).toHaveURL(/.*\/$/);
+    await expect(page.locator('text=Gestão da liga, do mercado à classificação')).toBeVisible();
+    await expect(page.locator('text=Não precisa de login')).toBeVisible();
+
+    // 2. Clicar no botão de Iniciar para navegar para /players
+    const startBtn = page.getByRole('button', { name: /^Iniciar/i });
+    await expect(startBtn).toBeVisible();
+    await startBtn.click();
     await expect(page).toHaveURL(/.*\/players/);
 
-    // 2. Verificar presença do logotipo/marca "Passe"
+    // 3. Verificar presença do logotipo/marca "Passe"
     await expect(page.locator('text=Passe').first()).toBeVisible();
 
-    // 3. Navegar para a página de Clubes
+    // 4. Navegar para a página de Clubes
     await navigateTo(page, '/clubs');
     await expect(page).toHaveURL(/.*\/clubs/);
     await expect(page.locator('h1')).toContainText('Clubes da Liga');
 
-    // 4. Navegar para Partidas
+    // 5. Navegar para Partidas
     await navigateTo(page, '/matches');
     await expect(page).toHaveURL(/.*\/matches/);
     await expect(page.locator('h1')).toContainText('Partidas');
 
-    // 5. Navegar para Classificação
+    // 6. Navegar para Classificação
     await navigateTo(page, '/standings');
     await expect(page).toHaveURL(/.*\/standings/);
     await expect(page.locator('h1')).toContainText('Classificação da Liga');
