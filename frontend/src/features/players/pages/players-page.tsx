@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { UserPlus, ChevronLeft, ChevronRight, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PlayersFilters } from '../components/players-filters';
@@ -17,11 +18,17 @@ import { useQuery } from '@tanstack/react-query';
 import { apiGet } from '@/lib/api';
 
 export function PlayersPage() {
-  const [filters, setFilters] = useState<QueryPlayersParams>({
+  const [searchParams] = useSearchParams();
+  const defaultClubId = searchParams.get('buyerClubId')
+    ? Number(searchParams.get('buyerClubId'))
+    : undefined;
+
+  const [filters, setFilters] = useState<QueryPlayersParams>(() => ({
     page: 1,
     limit: 10,
     sort: 'name',
-  });
+    free: searchParams.get('free') === 'true' ? true : undefined,
+  }));
 
   // Modais e Sheets
   const [createOpen, setCreateOpen] = useState(false);
@@ -248,6 +255,7 @@ export function PlayersPage() {
         player={buyPlayer}
         open={Boolean(buyPlayer)}
         onOpenChange={(open) => !open && setBuyPlayer(null)}
+        defaultClubId={defaultClubId}
       />
 
       <PlayerDeleteDialog
