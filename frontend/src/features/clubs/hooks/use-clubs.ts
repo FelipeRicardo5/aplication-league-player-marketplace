@@ -7,7 +7,7 @@ import {
   saveClubLineup,
 } from '../api/clubs-api';
 import type { CreateClubFormInput } from '../schemas/club.schema';
-import type { FormationType } from '../types';
+import type { ClubSummary, FormationType } from '../types';
 import { useToast } from '@/components/feedback/use-toast';
 import { ApiError } from '@/lib/api';
 
@@ -34,7 +34,7 @@ export function useClubLineupQuery(clubId: number | null) {
   });
 }
 
-export function useCreateClubMutation(onSuccessCallback?: () => void) {
+export function useCreateClubMutation(onSuccessCallback?: (newClub: ClubSummary) => void) {
   const queryClient = useQueryClient();
   const { success, error } = useToast();
 
@@ -43,10 +43,10 @@ export function useCreateClubMutation(onSuccessCallback?: () => void) {
     onSuccess: (newClub) => {
       queryClient.invalidateQueries({ queryKey: ['clubs'] });
       success(
-        'Clube cadastrado com sucesso',
-        `${newClub.name} (${newClub.acronym}) inicia com 300,00 em caixa.`,
+        'Clube criado',
+        `${newClub.name} (${newClub.acronym}) começa com 300,00 em caixa.`,
       );
-      if (onSuccessCallback) onSuccessCallback();
+      if (onSuccessCallback) onSuccessCallback(newClub);
     },
     onError: (err) => {
       if (err instanceof ApiError) {
@@ -58,7 +58,11 @@ export function useCreateClubMutation(onSuccessCallback?: () => void) {
   });
 }
 
-export function useSaveLineupMutation(clubId: number, onSuccessCallback?: () => void) {
+export function useSaveLineupMutation(
+  clubId: number,
+  onSuccessCallback?: () => void,
+  clubName?: string,
+) {
   const queryClient = useQueryClient();
   const { success, error } = useToast();
 
@@ -68,9 +72,10 @@ export function useSaveLineupMutation(clubId: number, onSuccessCallback?: () => 
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['lineups', clubId] });
       queryClient.invalidateQueries({ queryKey: ['clubs', clubId] });
+      const prefix = clubName ? `${clubName} na ` : 'Formação ';
       success(
         'Escalação salva',
-        `Formação ${data.formation} confirmada com os 5 titulares devolvidos pela API.`,
+        `${prefix}${data.formation}, com os 5 titulares devolvidos pela API.`,
       );
       if (onSuccessCallback) onSuccessCallback();
     },

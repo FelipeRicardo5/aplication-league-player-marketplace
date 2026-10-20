@@ -16,6 +16,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:deploy": "prisma migrate deploy",
     "prisma:reset": "prisma migrate reset",
+    "seed": "prisma db seed",
     "postinstall": "prisma generate",
     "test": "jest",
     "lint": "eslint .",
@@ -89,5 +90,8 @@
     ],
     "coverageDirectory": "./coverage",
     "testEnvironment": "node"
+  },
+  "prisma": {
+    "seed": "node --no-warnings --experimental-strip-types prisma/seed.ts"
   }
 }

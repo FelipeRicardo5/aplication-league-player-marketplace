@@ -1,10 +1,18 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft, Wallet, Users, Landmark, TrendingUp } from 'lucide-react';
+import {
+  Wallet,
+  Coins,
+  Landmark,
+  Shirt,
+  ShoppingCart,
+  Users,
+  FileText,
+  History,
+  TrendingUp,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Table,
   TableBody,
@@ -20,8 +28,8 @@ import { ClubTransactionsTab } from '@/features/transactions/components/club-tra
 import { SellPlayerDialog } from '@/features/market/components/sell-player-dialog';
 import { CardSkeleton, TableSkeleton } from '@/components/feedback/loading-skeleton';
 import { ErrorState } from '@/components/feedback/error-state';
-import { EmptyState } from '@/components/feedback/empty-state';
 import type { ClubPlayer } from '../types';
+import { cn } from '@/lib/utils';
 
 export function ClubDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -35,8 +43,12 @@ export function ClubDetailPage() {
   if (isLoading) {
     return (
       <div className="space-y-6">
-        <CardSkeleton count={3} />
-        <TableSkeleton rows={6} cols={6} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <CardSkeleton count={4} />
+        </div>
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
+          <TableSkeleton rows={6} cols={6} />
+        </div>
       </div>
     );
   }
@@ -55,136 +67,219 @@ export function ClubDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Navigation & Header */}
-      <div>
-        <Link
-          to="/clubs"
-          className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground mb-3 transition-colors"
-        >
-          <ArrowLeft className="h-3.5 w-3.5" />
-          Voltar para lista de clubes
-        </Link>
+      {/* Page Header Conforme Figma node 54-139627 */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-14 w-16 items-center justify-center rounded-xl bg-slate-100 text-slate-700 font-bold text-base border border-slate-200 shrink-0">
+            {club.acronym}
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">{club.name}</h1>
+            <div className="flex items-center gap-2 mt-1.5">
+              <span className="inline-flex items-center justify-center font-sans text-xs font-medium text-slate-700 px-2.5 py-0.5 rounded-md border border-slate-200 bg-white shadow-2xs">
+                Sigla {club.acronym}
+              </span>
+              <span className="inline-flex items-center gap-1.5 font-sans text-xs font-medium text-slate-700 px-2.5 py-0.5 rounded-md border border-slate-200 bg-white shadow-2xs">
+                <Shirt className="h-3.5 w-3.5 text-slate-500" />
+                {players.length} de 12 jogadores
+              </span>
+            </div>
+          </div>
+        </div>
 
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-primary font-bold text-xl border border-primary/20 shrink-0">
-              {club.acronym}
+        <Button
+          asChild
+          className="gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium text-xs sm:text-sm rounded-lg shadow-xs shrink-0 cursor-pointer h-9 px-3.5"
+        >
+          <Link to={`/players?free=true&buyerClubId=${club.id}`}>
+            <ShoppingCart className="h-4 w-4" />
+            Comprar jogadores
+          </Link>
+        </Button>
+      </div>
+
+      {/* 4 KPIs Superiores em Grade 1x4 Fiel ao Figma */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* 1. Caixa */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500 font-medium">Caixa</span>
+            <Wallet className="h-4 w-4 text-slate-400" />
+          </div>
+          <div className="mt-3">
+            <div className="flex items-baseline">
+              <span className="text-2xl font-bold text-slate-900 font-sans tabular-nums">
+                {formatCurrency(club.cash, false)}
+              </span>
+              <span className="text-xs font-normal text-slate-400 ml-1.5">moedas</span>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <span>{club.name}</span>
-                <span className="text-sm font-mono text-muted-foreground font-normal">
-                  (ID #{club.id})
-                </span>
-              </h1>
-              <p className="text-xs text-muted-foreground">
-                Elenco ativo com {players.length} de 12 jogadores permitidos.
-              </p>
+            <span className="text-[11px] text-slate-400 mt-1 block">Só muda por compras e vendas</span>
+          </div>
+        </div>
+
+        {/* 2. Valor do elenco */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500 font-medium">Valor do elenco</span>
+            <Coins className="h-4 w-4 text-slate-400" />
+          </div>
+          <div className="mt-3">
+            <div className="flex items-baseline">
+              <span className="text-2xl font-bold text-slate-900 font-sans tabular-nums">
+                {formatCurrency(club.squad_value, false)}
+              </span>
+              <span className="text-xs font-normal text-slate-400 ml-1.5">moedas</span>
             </div>
+            <span className="text-[11px] text-slate-400 mt-1 block">Soma dos valores de mercado</span>
+          </div>
+        </div>
+
+        {/* 3. Patrimônio */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500 font-medium">Patrimônio</span>
+            <Landmark className="h-4 w-4 text-slate-400" />
+          </div>
+          <div className="mt-3">
+            <div className="flex items-baseline">
+              <span className="text-2xl font-bold text-slate-900 font-sans tabular-nums">
+                {formatCurrency(club.net_worth, false)}
+              </span>
+              <span className="text-xs font-normal text-slate-400 ml-1.5">moedas</span>
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block">Caixa + valor do elenco</span>
+          </div>
+        </div>
+
+        {/* 4. Elenco */}
+        <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs flex flex-col justify-between">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500 font-medium">Elenco</span>
+            <Shirt className="h-4 w-4 text-slate-400" />
+          </div>
+          <div className="mt-3">
+            <div className="flex items-baseline">
+              <span className="text-2xl font-bold text-slate-900 font-sans tabular-nums">
+                {players.length} de 12
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-400 mt-1 block">Limite de 12 jogadores</span>
           </div>
         </div>
       </div>
 
-      {/* Financial KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card className="p-4 border-border">
-          <CardContent className="p-0 flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
-              <Wallet className="h-6 w-6" />
-            </div>
-            <div>
-              <span className="text-xs text-muted-foreground uppercase font-medium block">
-                Caixa Disponível
-              </span>
-              <span className="text-xl font-bold text-foreground">
-                {formatCurrency(club.cash, true)}
-              </span>
-              <span className="text-[11px] text-muted-foreground block">
-                Teto de compra: {formatCurrency(club.cash / 2, true)} (50%)
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Abas com design de linha conforme Figma */}
+      <div className="border-b border-slate-200">
+        <div className="flex items-center gap-6">
+          <button
+            type="button"
+            onClick={() => setActiveTab('squad')}
+            className={cn(
+              'flex items-center gap-2 pb-3 text-sm transition-colors cursor-pointer border-b-2',
+              activeTab === 'squad'
+                ? 'border-blue-600 text-blue-600 font-semibold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 font-medium',
+            )}
+          >
+            <Shirt className="h-4 w-4" />
+            <span>Elenco</span>
+            <span
+              className={cn(
+                'px-1.5 py-0.2 rounded-full text-[11px] font-mono leading-tight',
+                activeTab === 'squad'
+                  ? 'bg-blue-50 text-blue-600 font-bold'
+                  : 'bg-slate-100 text-slate-600',
+              )}
+            >
+              {players.length}
+            </span>
+          </button>
 
-        <Card className="p-4 border-border">
-          <CardContent className="p-0 flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 shrink-0">
-              <Users className="h-6 w-6" />
-            </div>
-            <div>
-              <span className="text-xs text-muted-foreground uppercase font-medium block">
-                Valor do Elenco
-              </span>
-              <span className="text-xl font-bold text-foreground">
-                {formatCurrency(club.squad_value, true)}
-              </span>
-              <span className="text-[11px] text-muted-foreground block">
-                {players.length} atletas contratados
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+          <button
+            type="button"
+            onClick={() => setActiveTab('lineup')}
+            className={cn(
+              'flex items-center gap-2 pb-3 text-sm transition-colors cursor-pointer border-b-2',
+              activeTab === 'lineup'
+                ? 'border-blue-600 text-blue-600 font-semibold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 font-medium',
+            )}
+          >
+            <FileText className="h-4 w-4" />
+            <span>Escalação</span>
+          </button>
 
-        <Card className="p-4 border-border">
-          <CardContent className="p-0 flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10 text-[#016630] shrink-0">
-              <Landmark className="h-6 w-6" />
-            </div>
-            <div>
-              <span className="text-xs text-muted-foreground uppercase font-medium block">
-                Patrimônio Líquido
-              </span>
-              <span className="text-xl font-bold text-[#016630]">
-                {formatCurrency(club.net_worth, true)}
-              </span>
-              <span className="text-[11px] text-muted-foreground block">
-                Caixa + Valor do elenco
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+          <button
+            type="button"
+            onClick={() => setActiveTab('transactions')}
+            className={cn(
+              'flex items-center gap-2 pb-3 text-sm transition-colors cursor-pointer border-b-2',
+              activeTab === 'transactions'
+                ? 'border-blue-600 text-blue-600 font-semibold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 font-medium',
+            )}
+          >
+            <History className="h-4 w-4" />
+            <span>Histórico</span>
+          </button>
+        </div>
       </div>
 
-      {/* Tabs */}
-      <Tabs
-        value={activeTab}
-        onValueChange={(val) => setActiveTab(val as 'squad' | 'lineup' | 'transactions')}
-        className="space-y-4"
-      >
-        <TabsList className="grid grid-cols-3 max-w-md">
-          <TabsTrigger value="squad" className="text-xs sm:text-sm">
-            Elenco ({players.length})
-          </TabsTrigger>
-          <TabsTrigger value="lineup" className="text-xs sm:text-sm">
-            Escalação
-          </TabsTrigger>
-          <TabsTrigger value="transactions" className="text-xs sm:text-sm">
-            Transações
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Tab 1: Elenco */}
-        <TabsContent value="squad" className="space-y-4">
+      {/* Conteúdo das Abas */}
+      {activeTab === 'squad' && (
+        <div className="space-y-4">
           {players.length === 0 ? (
-            <EmptyState
-              icon={<Users className="h-6 w-6 text-muted-foreground" />}
-              title="Elenco vazio"
-              description="Este clube ainda não contratou nenhum jogador no mercado."
-            />
+            /* Empty state oficial do Figma 54-139627 */
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-12 shadow-xs flex flex-col items-center justify-center min-h-[380px] text-center">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-600 mb-3 border border-slate-200/60">
+                <Shirt className="h-6 w-6" />
+              </div>
+              <h3 className="text-base font-bold text-slate-900 mb-1.5">
+                Nenhum jogador no elenco
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 max-w-md mb-6 leading-relaxed">
+                Compre jogadores livres para montar o elenco. O limite é de 12 jogadores, e o custo de cada compra não pode passar de 50% do caixa.
+              </p>
+              <Button
+                asChild
+                variant="outline"
+                className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-xs sm:text-sm font-medium h-9 px-4 cursor-pointer"
+              >
+                <Link to={`/players?free=true&buyerClubId=${club.id}`}>
+                  <Users className="h-4 w-4 text-slate-500" />
+                  Ver jogadores livres
+                </Link>
+              </Button>
+            </div>
           ) : (
-            <div className="rounded-xl border border-border bg-card shadow-xs overflow-hidden">
+            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
               <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Jogador</TableHead>
-                    <TableHead>Idade</TableHead>
-                    <TableHead>Condição</TableHead>
-                    <TableHead>Overall</TableHead>
-                    <TableHead>Valor de Mercado</TableHead>
-                    <TableHead>Fim da Fidelidade</TableHead>
-                    <TableHead>Dias Restantes</TableHead>
-                    <TableHead>Multa</TableHead>
-                    <TableHead className="text-right">Ação</TableHead>
+                <TableHeader className="bg-slate-50/80">
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="min-w-[180px] text-xs font-semibold text-slate-600">
+                      Jogador
+                    </TableHead>
+                    <TableHead className="w-[80px] text-xs font-semibold text-slate-600">
+                      Idade
+                    </TableHead>
+                    <TableHead className="min-w-[130px] text-xs font-semibold text-slate-600">
+                      Condição
+                    </TableHead>
+                    <TableHead className="w-[80px] text-xs font-semibold text-slate-600">
+                      Overall
+                    </TableHead>
+                    <TableHead className="w-[130px] text-xs font-semibold text-slate-600">
+                      Valor de mercado
+                    </TableHead>
+                    <TableHead className="w-[140px] text-xs font-semibold text-slate-600">
+                      Fim da fidelidade
+                    </TableHead>
+                    <TableHead className="w-[100px] text-xs font-semibold text-slate-600">
+                      Multa
+                    </TableHead>
+                    <TableHead className="w-[100px] text-right text-xs font-semibold text-slate-600">
+                      Ação
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -192,20 +287,19 @@ export function ClubDetailPage() {
                     const contract = p.contract;
 
                     return (
-                      <TableRow key={p.id}>
+                      <TableRow key={p.id} className="hover:bg-slate-50/60 transition-colors">
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold text-sm text-foreground">{p.name}</span>
-                            <Badge
-                              variant="secondary"
-                              className="text-[10px] px-1.5 py-0 font-mono"
-                            >
+                          <div className="flex items-center gap-2.5">
+                            <span className="font-bold text-sm text-slate-900">{p.name}</span>
+                            <span className="inline-flex items-center justify-center font-sans text-xs font-medium text-slate-700 px-2 py-0.5 rounded-md border border-slate-200 bg-white shadow-2xs">
                               {p.position}
-                            </Badge>
+                            </span>
                           </div>
                         </TableCell>
 
-                        <TableCell className="text-sm">{p.age} anos</TableCell>
+                        <TableCell className="text-xs font-sans text-slate-700 tabular-nums">
+                          {p.age}
+                        </TableCell>
 
                         <TableCell>
                           <Badge
@@ -217,47 +311,38 @@ export function ClubDetailPage() {
                                   : 'destructive'
                             }
                             dot
+                            className="rounded-md"
                           >
-                            {p.condition}
+                            {p.condition === 'APTO'
+                              ? 'Apto'
+                              : p.condition === 'MAL_CONDICIONADO'
+                                ? 'Mal condicionado'
+                                : 'Doente'}
                           </Badge>
                         </TableCell>
 
                         <TableCell>
-                          <span className="font-mono font-bold text-xs bg-primary/10 text-primary px-2 py-0.5 rounded">
+                          <span className="font-sans font-bold text-sm text-slate-900 tabular-nums">
                             {p.overall}
                           </span>
                         </TableCell>
 
-                        <TableCell className="font-semibold text-sm text-foreground">
-                          {formatCurrency(p.market_value, true)}
+                        <TableCell className="font-bold text-sm font-sans tabular-nums text-slate-900">
+                          {formatCurrency(p.market_value, false)}
                         </TableCell>
 
-                        <TableCell className="text-xs text-muted-foreground">
+                        <TableCell className="text-xs font-sans text-slate-600">
                           {contract?.loyalty_until ? formatDate(contract.loyalty_until) : '-'}
                         </TableCell>
 
-                        <TableCell className="text-xs">
+                        <TableCell className="text-xs font-sans">
                           {contract ? (
                             contract.remaining_days > 0 ? (
-                              <span className="text-warning font-semibold">
-                                {contract.remaining_days} dias
-                              </span>
-                            ) : (
-                              <span className="text-[#016630]">Cumprida</span>
-                            )
-                          ) : (
-                            '-'
-                          )}
-                        </TableCell>
-
-                        <TableCell className="text-xs">
-                          {contract ? (
-                            contract.penalty_rate > 0 ? (
-                              <span className="text-warning font-bold">
+                              <span className="text-amber-600 font-semibold tabular-nums">
                                 {formatPercent(contract.penalty_rate)}
                               </span>
                             ) : (
-                              <span className="text-muted-foreground">0%</span>
+                              <span className="text-emerald-700 font-medium">Cumprida</span>
                             )
                           ) : (
                             '-'
@@ -269,7 +354,7 @@ export function ClubDetailPage() {
                             variant="outline"
                             size="sm"
                             onClick={() => setSellingPlayer(p)}
-                            className="gap-1.5 text-xs text-warning hover:text-warning hover:border-warning"
+                            className="h-7 px-2.5 gap-1.5 text-xs text-amber-700 border-amber-200 bg-amber-50/50 hover:bg-amber-50 hover:text-amber-800 rounded-md cursor-pointer transition-colors"
                           >
                             <TrendingUp className="h-3.5 w-3.5" />
                             Vender
@@ -282,18 +367,20 @@ export function ClubDetailPage() {
               </Table>
             </div>
           )}
-        </TabsContent>
+        </div>
+      )}
 
-        {/* Tab 2: Escalação */}
-        <TabsContent value="lineup">
-          <ClubLineupTab club={club} />
-        </TabsContent>
+      {/* Tab 2: Escalação */}
+      {activeTab === 'lineup' && <ClubLineupTab club={club} />}
 
-        {/* Tab 3: Transações */}
-        <TabsContent value="transactions">
-          <ClubTransactionsTab clubId={club.id} clubAcronym={club.acronym} />
-        </TabsContent>
-      </Tabs>
+      {/* Tab 3: Transações */}
+      {activeTab === 'transactions' && (
+        <ClubTransactionsTab
+          clubId={club.id}
+          clubAcronym={club.acronym}
+          clubPlayers={club.players}
+        />
+      )}
 
       {/* Sell Modal */}
       <SellPlayerDialog
