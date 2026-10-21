@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { AlertCircle, AlertTriangle, Lock, Swords } from 'lucide-react';
+import { AlertCircle, AlertTriangle, Lock, Swords, HeartCrack } from 'lucide-react';
 import { useClubLineupQuery, useSaveLineupMutation } from '../hooks/use-clubs';
 import type { ClubDetail, FormationType } from '../types';
 import type { Player } from '@/features/players/types';
@@ -81,39 +81,60 @@ function MiniPitch({ formation }: { formation: FormationType }) {
   const getDots = () => {
     switch (formation) {
       case '3-1':
-        return { ata: 1, mei: 0, def: 3, gol: 1 };
+        return [
+          { cx: 14, cy: 30 }, // GOL
+          { cx: 6, cy: 23 },  // DEF 1
+          { cx: 14, cy: 23 }, // DEF 2
+          { cx: 22, cy: 23 }, // DEF 3
+          { cx: 14, cy: 8 },  // ATA
+        ];
       case '2-2':
-        return { ata: 2, mei: 0, def: 2, gol: 1 };
+        return [
+          { cx: 14, cy: 30 }, // GOL
+          { cx: 9, cy: 23 },  // DEF 1
+          { cx: 19, cy: 23 }, // DEF 2
+          { cx: 9, cy: 8 },   // ATA 1
+          { cx: 19, cy: 8 },  // ATA 2
+        ];
       case '2-1-1':
-        return { ata: 1, mei: 1, def: 2, gol: 1 };
+        return [
+          { cx: 14, cy: 30 }, // GOL
+          { cx: 9, cy: 23 },  // DEF 1
+          { cx: 19, cy: 23 }, // DEF 2
+          { cx: 14, cy: 16 }, // MEI
+          { cx: 14, cy: 8 },  // ATA
+        ];
       case '1-2-1':
-        return { ata: 1, mei: 2, def: 1, gol: 1 };
+        return [
+          { cx: 14, cy: 30 }, // GOL
+          { cx: 14, cy: 24 }, // DEF
+          { cx: 8, cy: 16 },  // MEI 1
+          { cx: 20, cy: 16 }, // MEI 2
+          { cx: 14, cy: 8 },  // ATA
+        ];
     }
   };
   const dots = getDots();
 
   return (
-    <div className="w-8 h-10 rounded-md bg-[#0c532b] p-1 flex flex-col justify-between items-center border border-[#0a4222] shrink-0">
-      <div className="flex justify-center gap-1 w-full">
-        {Array.from({ length: dots.ata }).map((_, i) => (
-          <span key={i} className="w-1.5 h-1.5 rounded-full bg-white" />
+    <div className="w-7 h-9 rounded-md bg-[#0D542B] overflow-hidden relative shrink-0 shadow-2xs border border-[#093F1C]">
+      <svg viewBox="0 0 28 36" className="w-full h-full pointer-events-none">
+        {/* Pitch boundary */}
+        <rect x="2" y="2" width="24" height="32" rx="2" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        {/* Halfway line */}
+        <line x1="2" y1="18" x2="26" y2="18" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        {/* Center circle */}
+        <circle cx="14" cy="18" r="3.5" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        {/* Goal area bottom */}
+        <rect x="8" y="28" width="12" height="6" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        {/* Goal area top */}
+        <rect x="8" y="2" width="12" height="6" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+
+        {/* Formation dots */}
+        {dots.map((d, i) => (
+          <circle key={i} cx={d.cx} cy={d.cy} r="1.5" fill="#FFFFFF" />
         ))}
-      </div>
-      {dots.mei > 0 && (
-        <div className="flex justify-center gap-1 w-full">
-          {Array.from({ length: dots.mei }).map((_, i) => (
-            <span key={i} className="w-1.5 h-1.5 rounded-full bg-white" />
-          ))}
-        </div>
-      )}
-      <div className="flex justify-center gap-1 w-full">
-        {Array.from({ length: dots.def }).map((_, i) => (
-          <span key={i} className="w-1.5 h-1.5 rounded-full bg-white" />
-        ))}
-      </div>
-      <div className="flex justify-center w-full">
-        <span className="w-1.5 h-1.5 rounded-full bg-white" />
-      </div>
+      </svg>
     </div>
   );
 }
@@ -727,13 +748,57 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
             </div>
 
             {/* Campinho Tático Visual Fiel ao Figma */}
-            <div className="rounded-2xl bg-[#0c532b] border border-[#0a4222] p-4 min-h-[380px] relative overflow-hidden flex flex-col justify-between items-center text-white select-none shadow-inner">
-              {/* Linhas e marcações do campo */}
-              <div className="absolute inset-3 border border-white/20 rounded-xl pointer-events-none" />
-              <div className="absolute top-1/2 left-3 right-3 h-[1px] bg-white/20 pointer-events-none" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full border border-white/20 pointer-events-none" />
-              <div className="absolute top-3 left-1/4 right-1/4 h-10 border-b border-l border-r border-white/20 pointer-events-none" />
-              <div className="absolute bottom-3 left-1/4 right-1/4 h-10 border-t border-l border-r border-white/20 pointer-events-none" />
+            <div className="rounded-2xl bg-[#0D542B] min-h-[380px] relative overflow-hidden flex flex-col justify-between items-center text-white select-none shadow-sm p-4">
+              {/* Listras horizontais do gramado (10 faixas com cores autênticas amostradas do Figma #0D542B e #135E32) */}
+              <div className="absolute inset-0 flex flex-col pointer-events-none">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={cn('flex-1 w-full', i % 2 === 0 ? 'bg-[#0D542B]' : 'bg-[#135E32]')}
+                  />
+                ))}
+              </div>
+
+              {/* Linhas e marcações vetoriais do campo */}
+              <svg
+                viewBox="0 0 300 400"
+                className="absolute inset-0 w-full h-full pointer-events-none"
+                preserveAspectRatio="none"
+              >
+                {/* Linha externa de limite */}
+                <rect
+                  x="12"
+                  y="12"
+                  width="276"
+                  height="376"
+                  rx="6"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
+                {/* 4 Arcos de escanteio */}
+                <path d="M 12 24 A 12 12 0 0 0 24 12" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <path d="M 288 24 A 12 12 0 0 1 276 12" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <path d="M 12 376 A 12 12 0 0 1 24 388" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <path d="M 288 376 A 12 12 0 0 0 276 388" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+
+                {/* Linha de meio-campo */}
+                <line x1="12" y1="200" x2="288" y2="200" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                {/* Círculo central e ponto */}
+                <circle cx="150" cy="200" r="45" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <circle cx="150" cy="200" r="2.5" fill="rgba(255,255,255,0.6)" />
+
+                {/* Grande área do goleiro (embaixo) */}
+                <rect x="65" y="300" width="170" height="88" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                {/* Pequena área do goleiro (embaixo) */}
+                <rect x="105" y="348" width="90" height="40" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                {/* Meia-lua da grande área */}
+                <path d="M 120 300 A 35 35 0 0 1 180 300" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                {/* Ponto de pênalti */}
+                <circle cx="150" cy="330" r="2.5" fill="rgba(255,255,255,0.6)" />
+                {/* Rede do gol embaixo */}
+                <rect x="120" y="388" width="60" height="8" rx="1" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+              </svg>
 
               {/* Ataque (Topo) */}
               <div className="relative z-10 flex justify-center gap-6 w-full pt-2">
@@ -743,14 +808,14 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                   .map(({ slot, player }) => (
                     <div key={slot.id} className="flex flex-col items-center text-center">
                       {player ? (
-                        <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md border-2 border-white relative">
+                        <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-white relative">
                           {getInitials(player.name)}
                           {player.condition === 'MAL_CONDICIONADO' && (
                             <span
-                              className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-amber-500 border border-white flex items-center justify-center text-[8px] font-bold text-white shadow-xs"
-                              title="Mal condicionado"
+                              className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#B45309] text-white ring-1.5 ring-white shadow-xs"
+                              title="Mal condicionado (-15% atributos)"
                             >
-                              !
+                              <HeartCrack className="h-2.5 w-2.5 fill-white stroke-none" />
                             </span>
                           )}
                         </div>
@@ -759,7 +824,7 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                           ?
                         </div>
                       )}
-                      <span className="text-[10px] font-medium text-white drop-shadow-md text-center max-w-[65px] truncate mt-0.5">
+                      <span className="mt-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-white text-[11px] font-medium leading-tight border border-white/5 shadow-xs max-w-[80px] truncate">
                         {player ? getSurname(player.name) : 'Ataque'}
                       </span>
                     </div>
@@ -775,14 +840,14 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                     .map(({ slot, player }) => (
                       <div key={slot.id} className="flex flex-col items-center text-center">
                         {player ? (
-                          <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md border-2 border-white relative">
+                          <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-white relative">
                             {getInitials(player.name)}
                             {player.condition === 'MAL_CONDICIONADO' && (
                               <span
-                                className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-amber-500 border border-white flex items-center justify-center text-[8px] font-bold text-white shadow-xs"
-                                title="Mal condicionado"
+                                className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#B45309] text-white ring-1.5 ring-white shadow-xs"
+                                title="Mal condicionado (-15% atributos)"
                               >
-                                !
+                                <HeartCrack className="h-2.5 w-2.5 fill-white stroke-none" />
                               </span>
                             )}
                           </div>
@@ -791,7 +856,7 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                             ?
                           </div>
                         )}
-                        <span className="text-[10px] font-medium text-white drop-shadow-md text-center max-w-[65px] truncate mt-0.5">
+                        <span className="mt-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-white text-[11px] font-medium leading-tight border border-white/5 shadow-xs max-w-[80px] truncate">
                           {player ? getSurname(player.name) : 'Meio'}
                         </span>
                       </div>
@@ -807,14 +872,14 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                   .map(({ slot, player }) => (
                     <div key={slot.id} className="flex flex-col items-center text-center">
                       {player ? (
-                        <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md border-2 border-white relative">
+                        <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-white relative">
                           {getInitials(player.name)}
                           {player.condition === 'MAL_CONDICIONADO' && (
                             <span
-                              className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-amber-500 border border-white flex items-center justify-center text-[8px] font-bold text-white shadow-xs"
-                              title="Mal condicionado"
+                              className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#B45309] text-white ring-1.5 ring-white shadow-xs"
+                              title="Mal condicionado (-15% atributos)"
                             >
-                              !
+                              <HeartCrack className="h-2.5 w-2.5 fill-white stroke-none" />
                             </span>
                           )}
                         </div>
@@ -823,7 +888,7 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                           ?
                         </div>
                       )}
-                      <span className="text-[10px] font-medium text-white drop-shadow-md text-center max-w-[65px] truncate mt-0.5">
+                      <span className="mt-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-white text-[11px] font-medium leading-tight border border-white/5 shadow-xs max-w-[80px] truncate">
                         {player ? getSurname(player.name) : 'Defesa'}
                       </span>
                     </div>
@@ -838,14 +903,14 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                   .map(({ slot, player }) => (
                     <div key={slot.id} className="flex flex-col items-center text-center">
                       {player ? (
-                        <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md border-2 border-white relative">
+                        <div className="w-9 h-9 rounded-full bg-[#155dfc] text-white font-bold text-xs flex items-center justify-center shadow-md ring-2 ring-white relative">
                           {getInitials(player.name)}
                           {player.condition === 'MAL_CONDICIONADO' && (
                             <span
-                              className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-amber-500 border border-white flex items-center justify-center text-[8px] font-bold text-white shadow-xs"
-                              title="Mal condicionado"
+                              className="absolute -top-1 -left-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#B45309] text-white ring-1.5 ring-white shadow-xs"
+                              title="Mal condicionado (-15% atributos)"
                             >
-                              !
+                              <HeartCrack className="h-2.5 w-2.5 fill-white stroke-none" />
                             </span>
                           )}
                         </div>
@@ -854,7 +919,7 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                           ?
                         </div>
                       )}
-                      <span className="text-[10px] font-medium text-white drop-shadow-md text-center max-w-[65px] truncate mt-0.5">
+                      <span className="mt-1 px-2 py-0.5 rounded-md bg-black/60 backdrop-blur-xs text-white text-[11px] font-medium leading-tight border border-white/5 shadow-xs max-w-[80px] truncate">
                         {player ? getSurname(player.name) : 'Goleiro'}
                       </span>
                     </div>
