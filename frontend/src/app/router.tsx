@@ -5,6 +5,7 @@ import { PlayersPage } from '@/features/players/pages/players-page';
 import { ClubsPage } from '@/features/clubs/pages/clubs-page';
 import { ClubDetailPage } from '@/features/clubs/pages/club-detail-page';
 import { MatchesPage } from '@/features/league/pages/matches-page';
+import { MatchDetailPage } from '@/features/league/pages/match-detail-page';
 import { StandingsPage } from '@/features/league/pages/standings-page';
 import { NotFoundPage } from '@/components/feedback/not-found-page';
 
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: 'matches',
         element: <MatchesPage />,
+      },
+      {
+        path: 'matches/:id',
+        element: <MatchDetailPage />,
       },
       {
         path: 'standings',
