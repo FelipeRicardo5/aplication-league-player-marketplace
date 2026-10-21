@@ -1,5 +1,6 @@
-import { useMemo } from 'react';
-import { Trophy, RefreshCw, Calendar, ArrowRight, Shield } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { List, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -9,8 +10,8 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { Link } from 'react-router-dom';
 import { useStandingsQuery, useMatchesQuery } from '../hooks/use-league';
+import { CreateMatchDialog } from '../components/create-match-dialog';
 import { formatDateTime } from '@/lib/formatters';
 import { TableSkeleton } from '@/components/feedback/loading-skeleton';
 import { ErrorState } from '@/components/feedback/error-state';
@@ -18,6 +19,7 @@ import { EmptyState } from '@/components/feedback/empty-state';
 import { useQuery } from '@tanstack/react-query';
 import { apiGet } from '@/lib/api';
 import type { ClubSummary } from '@/features/clubs/types';
+import type { Match } from '../types';
 import { cn } from '@/lib/utils';
 
 function getInitials(name: string): string {
@@ -28,7 +30,10 @@ function getInitials(name: string): string {
 }
 
 export function StandingsPage() {
-  const { data: standings, isLoading, isError, error, refetch, isFetching } = useStandingsQuery();
+  const navigate = useNavigate();
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const { data: standings, isLoading, isError, error, refetch } = useStandingsQuery();
   const { data: matches } = useMatchesQuery();
 
   const { data: clubs } = useQuery({
@@ -47,29 +52,34 @@ export function StandingsPage() {
 
   const recentMatches = matches ? matches.slice(0, 3) : [];
 
+  const handleMatchCreated = (match: Match) => {
+    refetch();
+    navigate(`/matches/${match.id}`);
+  };
+
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header (Figma L05 / 54:150880) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-amber-500" />
-            Classificação Geral
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Tabela de pontuação dinâmica calculada oficialmente pelo regulamento da liga.
-          </p>
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 border border-blue-200 text-blue-600 shrink-0">
+            <List className="h-5 w-5" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">Classificação</h1>
+            <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Todos os clubes, com 3 pontos por vitória e 1 por empate.
+            </p>
+          </div>
         </div>
 
         <Button
+          onClick={() => setCreateOpen(true)}
           variant="outline"
-          size="sm"
-          onClick={() => refetch()}
-          isLoading={isFetching}
-          className="gap-2 shrink-0 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium h-9 px-3.5 rounded-lg cursor-pointer self-start sm:self-auto"
+          className="gap-1.5 shrink-0 border-slate-200 bg-white text-slate-900 hover:bg-slate-50 text-xs sm:text-sm font-medium h-9 px-3.5 rounded-lg shadow-2xs cursor-pointer self-start sm:self-auto"
         >
-          <RefreshCw className="h-4 w-4 text-slate-500" />
-          Atualizar Tabela
+          <Plus className="h-4 w-4" />
+          Nova partida
         </Button>
       </div>
 
@@ -86,310 +96,250 @@ export function StandingsPage() {
         />
       ) : !standings || standings.length === 0 ? (
         <EmptyState
-          icon={<Trophy className="h-6 w-6 text-slate-400" />}
+          icon={<List className="h-6 w-6 text-slate-400" />}
           title="Nenhum clube na liga"
           description="Ainda não existem clubes cadastrados para compor a tabela da liga."
         />
       ) : (
         /* Layout de 2 colunas conforme Figma L05 */
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Coluna da Esquerda: Tabela de Classificação */}
-          <div className="lg:col-span-8 space-y-3">
-            <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
-              <Table>
-                <TableHeader className="bg-slate-50/80">
-                  <TableRow className="hover:bg-transparent">
-                    <TableHead className="w-12 text-center text-xs font-semibold text-slate-600">
-                      Pos
-                    </TableHead>
-                    <TableHead className="min-w-[160px] text-xs font-semibold text-slate-600">
-                      Clube
-                    </TableHead>
-                    <TableHead className="w-10 text-center text-xs font-semibold text-slate-600">
-                      J
-                    </TableHead>
-                    <TableHead className="w-10 text-center text-xs font-semibold text-slate-600">
-                      V
-                    </TableHead>
-                    <TableHead className="w-10 text-center text-xs font-semibold text-slate-600">
-                      E
-                    </TableHead>
-                    <TableHead className="w-10 text-center text-xs font-semibold text-slate-600">
-                      D
-                    </TableHead>
-                    <TableHead className="w-10 text-center text-xs font-semibold text-slate-600">
-                      GP
-                    </TableHead>
-                    <TableHead className="w-10 text-center text-xs font-semibold text-slate-600">
-                      GC
-                    </TableHead>
-                    <TableHead className="w-12 text-center text-xs font-semibold text-slate-600">
-                      SG
-                    </TableHead>
-                    <TableHead className="w-14 text-center text-xs font-bold text-slate-900">
-                      Pts
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {standings.map((row) => {
-                    const isLeader = row.position === 1;
-                    const clubAcronym =
-                      clubsMap.get(row.club_id)?.acronym || getInitials(row.club_name);
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Coluna da Esquerda: Tabela de Classificação */}
+            <div className="lg:col-span-8 space-y-3">
+              <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
+                <Table>
+                  <TableHeader className="bg-slate-50/80">
+                    <TableRow className="hover:bg-transparent">
+                      <TableHead className="w-12 text-center text-xs font-semibold text-slate-500">
+                        #
+                      </TableHead>
+                      <TableHead className="min-w-[160px] text-xs font-semibold text-slate-500">
+                        Clube
+                      </TableHead>
+                      <TableHead className="w-10 text-center text-xs font-semibold text-slate-500">
+                        J
+                      </TableHead>
+                      <TableHead className="w-10 text-center text-xs font-semibold text-slate-500">
+                        V
+                      </TableHead>
+                      <TableHead className="w-10 text-center text-xs font-semibold text-slate-500">
+                        E
+                      </TableHead>
+                      <TableHead className="w-10 text-center text-xs font-semibold text-slate-500">
+                        D
+                      </TableHead>
+                      <TableHead className="w-10 text-center text-xs font-semibold text-slate-500">
+                        GP
+                      </TableHead>
+                      <TableHead className="w-10 text-center text-xs font-semibold text-slate-500">
+                        GC
+                      </TableHead>
+                      <TableHead className="w-12 text-center text-xs font-semibold text-slate-500">
+                        SG
+                      </TableHead>
+                      <TableHead className="w-14 text-center text-xs font-semibold text-slate-500">
+                        Pts
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {standings.map((row) => {
+                      const isLeader = row.position === 1;
+                      const clubAcronym =
+                        clubsMap.get(row.club_id)?.acronym || getInitials(row.club_name);
 
-                    return (
-                      <TableRow
-                        key={row.club_id}
-                        className={cn(
-                          'hover:bg-slate-50/60 transition-colors',
-                          isLeader && 'bg-blue-50/30',
-                        )}
-                      >
-                        {/* Posição */}
-                        <TableCell className="text-center">
-                          <span
-                            className={cn(
-                              'inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold font-mono',
-                              isLeader
-                                ? 'bg-blue-600 text-white shadow-2xs'
-                                : 'text-slate-600 bg-slate-100',
-                            )}
-                          >
-                            {row.position}º
-                          </span>
-                        </TableCell>
-
-                        {/* Clube */}
-                        <TableCell>
-                          <Link
-                            to={`/clubs/${row.club_id}`}
-                            className="font-semibold text-sm text-slate-900 hover:text-blue-600 hover:underline transition-colors flex items-center gap-2"
-                          >
-                            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold border border-slate-200 shrink-0">
-                              {clubAcronym}
+                      return (
+                        <TableRow
+                          key={row.club_id}
+                          className="hover:bg-slate-50/60 transition-colors border-b border-slate-100 last:border-b-0"
+                        >
+                          {/* Posição */}
+                          <TableCell className="text-center py-3">
+                            <span
+                              className={cn(
+                                'inline-flex h-6 w-6 items-center justify-center rounded-lg text-xs font-bold',
+                                isLeader
+                                  ? 'bg-blue-600 text-white shadow-2xs'
+                                  : 'bg-slate-100 text-slate-700 font-semibold',
+                              )}
+                            >
+                              {row.position}
                             </span>
-                            <span>{row.club_name}</span>
-                            {isLeader && (
-                              <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-                                Líder
+                          </TableCell>
+
+                          {/* Clube */}
+                          <TableCell className="py-3">
+                            <div className="flex items-center gap-2">
+                              <span className="flex h-5 items-center justify-center rounded bg-slate-100 text-slate-700 text-[10px] font-bold px-1.5 py-0.5 border border-slate-200/60 shrink-0">
+                                {clubAcronym}
                               </span>
-                            )}
-                          </Link>
-                        </TableCell>
+                              <Link
+                                to={`/clubs/${row.club_id}`}
+                                className="font-semibold text-xs sm:text-sm text-slate-900 underline underline-offset-2 hover:text-blue-600 transition-colors"
+                              >
+                                {row.club_name}
+                              </Link>
+                            </div>
+                          </TableCell>
 
-                        {/* Jogos (J) */}
-                        <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600">
-                          {row.played}
-                        </TableCell>
+                          {/* Jogos (J) */}
+                          <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600 py-3">
+                            {row.played}
+                          </TableCell>
 
-                        {/* Vitórias (V) */}
-                        <TableCell className="text-center text-xs font-sans tabular-nums text-slate-900 font-medium">
-                          {row.wins}
-                        </TableCell>
+                          {/* Vitórias (V) */}
+                          <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600 py-3">
+                            {row.wins}
+                          </TableCell>
 
-                        {/* Empates (E) */}
-                        <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600">
-                          {row.draws}
-                        </TableCell>
+                          {/* Empates (E) */}
+                          <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600 py-3">
+                            {row.draws}
+                          </TableCell>
 
-                        {/* Derrotas (D) */}
-                        <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600">
-                          {row.losses}
-                        </TableCell>
+                          {/* Derrotas (D) */}
+                          <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600 py-3">
+                            {row.losses}
+                          </TableCell>
 
-                        {/* Gols Pró (GP) */}
-                        <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600">
-                          {row.goals_for}
-                        </TableCell>
+                          {/* Gols Pró (GP) */}
+                          <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600 py-3">
+                            {row.goals_for}
+                          </TableCell>
 
-                        {/* Gols Contra (GC) */}
-                        <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600">
-                          {row.goals_against}
-                        </TableCell>
+                          {/* Gols Contra (GC) */}
+                          <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600 py-3">
+                            {row.goals_against}
+                          </TableCell>
 
-                        {/* Saldo de Gols (SG) */}
-                        <TableCell className="text-center text-xs font-sans tabular-nums font-semibold">
-                          <span
-                            className={
-                              row.goal_difference > 0
-                                ? 'text-[#016630]'
-                                : row.goal_difference < 0
-                                  ? 'text-[#BF000F]'
-                                  : 'text-slate-600'
-                            }
-                          >
+                          {/* Saldo de Gols (SG) */}
+                          <TableCell className="text-center text-xs font-sans tabular-nums text-slate-600 py-3">
                             {row.goal_difference > 0
                               ? `+${row.goal_difference}`
                               : row.goal_difference}
-                          </span>
-                        </TableCell>
+                          </TableCell>
 
-                        {/* Pontos (Pts) - Última Coluna Conforme FIGMA-018 */}
-                        <TableCell className="text-center font-bold text-sm text-slate-900 font-sans tabular-nums">
-                          {row.points}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
+                          {/* Pontos (Pts) - Última Coluna */}
+                          <TableCell className="text-center font-bold text-xs sm:text-sm text-slate-900 font-sans tabular-nums py-3">
+                            {row.points}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
 
-              {/* Legenda de siglas */}
-              <div className="border-t border-slate-200/80 bg-slate-50/50 px-4 py-2.5 text-[11px] text-slate-500 flex flex-wrap gap-x-3 gap-y-1">
-                <span><strong>J:</strong> Jogos</span>
-                <span>•</span>
-                <span><strong>V:</strong> Vitórias</span>
-                <span>•</span>
-                <span><strong>E:</strong> Empates</span>
-                <span>•</span>
-                <span><strong>D:</strong> Derrotas</span>
-                <span>•</span>
-                <span><strong>GP:</strong> Gols Pró</span>
-                <span>•</span>
-                <span><strong>GC:</strong> Gols Contra</span>
-                <span>•</span>
-                <span><strong>SG:</strong> Saldo de Gols</span>
-                <span>•</span>
-                <span><strong>Pts:</strong> Pontos</span>
-              </div>
-            </div>
-
-            {/* Nota da RN21 */}
-            <p className="text-[11px] text-slate-500">
-              * A classificação é recalculada e ordenada automaticamente a cada partida realizada (RN21).
-            </p>
-          </div>
-
-          {/* Coluna da Direita: Painel Lateral (Figma L05) */}
-          <div className="lg:col-span-4 space-y-4">
-            {/* Card 1: Últimas Partidas */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <Calendar className="h-4 w-4 text-blue-600" />
-                  Últimas partidas
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Resultados dos confrontos mais recentes da liga
-                </p>
-              </div>
-
-              {recentMatches.length === 0 ? (
-                <p className="text-xs text-slate-400 py-3 text-center">
-                  Nenhuma partida disputada ainda.
-                </p>
-              ) : (
-                <div className="space-y-2 pt-1">
-                  {recentMatches.map((m) => {
-                    const homeAcronym =
-                      clubsMap.get(m.home.club_id)?.acronym || getInitials(m.home.club_name);
-                    const awayAcronym =
-                      clubsMap.get(m.away.club_id)?.acronym || getInitials(m.away.club_name);
-
-                    return (
-                      <Link
-                        key={m.id}
-                        to={`/matches/${m.id}`}
-                        className="block p-2.5 rounded-xl border border-slate-200/80 hover:border-blue-200 hover:bg-slate-50/80 transition-colors group"
-                      >
-                        <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
-                          <span>{formatDateTime(m.played_at)}</span>
-                          <span className="text-blue-600 font-medium group-hover:underline flex items-center gap-0.5">
-                            Ver duelos <ArrowRight className="h-2.5 w-2.5" />
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between font-semibold text-xs text-slate-900">
-                          <span className="flex items-center gap-1.5">
-                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-100 text-slate-700 text-[9px] font-bold">
-                              {homeAcronym}
-                            </span>
-                            {m.home.club_name}
-                          </span>
-                          <span className="font-bold tabular-nums px-1.5 py-0.5 rounded bg-slate-100 text-slate-900 text-xs">
-                            {m.home.goals} - {m.away.goals}
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            {m.away.club_name}
-                            <span className="flex h-4 w-4 items-center justify-center rounded-full bg-slate-100 text-slate-700 text-[9px] font-bold">
-                              {awayAcronym}
-                            </span>
-                          </span>
-                        </div>
-                      </Link>
-                    );
-                  })}
-
-                  <div className="pt-1">
-                    <Button
-                      asChild
-                      variant="ghost"
-                      size="sm"
-                      className="w-full text-xs text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-medium justify-center h-8 cursor-pointer"
-                    >
-                      <Link to="/matches">
-                        Ver todas as partidas
-                        <ArrowRight className="h-3 w-3 ml-1.5" />
-                      </Link>
-                    </Button>
-                  </div>
+                {/* Legenda de siglas (Figma L05) */}
+                <div className="border-t border-slate-100 bg-white px-4 py-3 text-[11px] text-slate-400">
+                  J: jogos · V: vitórias · E: empates · D: derrotas · GP: gols marcados · GC: gols sofridos · SG: saldo de gols · Pts: pontos
                 </div>
-              )}
+              </div>
             </div>
 
-            {/* Card 2: Ordem da Tabela / Critérios de Desempate (Figma L05) */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-3">
-              <div>
-                <h3 className="text-sm font-bold text-slate-900 flex items-center gap-1.5">
-                  <Shield className="h-4 w-4 text-slate-600" />
-                  Ordem da tabela
-                </h3>
-                <p className="text-xs text-slate-500">
-                  Critérios de ordenação e desempate oficiais
-                </p>
+            {/* Coluna da Direita: Painel Lateral (Figma L05) */}
+            <div className="lg:col-span-4 space-y-4">
+              {/* Card 1: Últimas Partidas */}
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-3">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Últimas partidas</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">Da mais recente para a mais antiga.</p>
+                </div>
+
+                {recentMatches.length === 0 ? (
+                  <p className="text-xs text-slate-400 py-3 text-center">
+                    Nenhuma partida disputada ainda.
+                  </p>
+                ) : (
+                  <div className="divide-y divide-slate-100 pt-1">
+                    {recentMatches.map((m) => {
+                      const homeWon = m.home.goals > m.away.goals;
+                      const awayWon = m.away.goals > m.home.goals;
+
+                      return (
+                        <Link
+                          key={m.id}
+                          to={`/matches/${m.id}`}
+                          className="block py-2.5 hover:bg-slate-50/60 rounded-lg px-1 transition-colors group"
+                        >
+                          <div className="text-[11px] text-slate-400 mb-1">
+                            {formatDateTime(m.played_at)}
+                          </div>
+                          <div className="flex items-center justify-between text-xs text-slate-800">
+                            <span
+                              className={cn(
+                                'truncate',
+                                homeWon ? 'font-bold text-slate-900' : 'font-normal text-slate-700',
+                              )}
+                            >
+                              {m.home.club_name}
+                            </span>
+                            <span className="shrink-0 mx-2 inline-flex items-center justify-center px-2 py-0.5 rounded-md bg-slate-100 font-bold text-slate-900 text-xs tabular-nums">
+                              {m.home.goals} × {m.away.goals}
+                            </span>
+                            <span
+                              className={cn(
+                                'truncate text-right',
+                                awayWon ? 'font-bold text-slate-900' : 'font-normal text-slate-700',
+                              )}
+                            >
+                              {m.away.club_name}
+                            </span>
+                          </div>
+                        </Link>
+                      );
+                    })}
+
+                    <div className="pt-3 text-center">
+                      <Link
+                        to="/matches"
+                        className="inline-flex items-center text-xs text-blue-600 hover:text-blue-700 font-medium hover:underline"
+                      >
+                        Ver todas as partidas →
+                      </Link>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <ol className="space-y-2 text-xs text-slate-600 pt-1">
-                <li className="flex items-start gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-700 font-bold text-[11px] shrink-0 mt-0.5">
-                    1
-                  </span>
-                  <span><strong>Pontos:</strong> Vitória vale 3 pts, Empate vale 1 pt e Derrota vale 0 pt.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] shrink-0 mt-0.5">
-                    2
-                  </span>
-                  <span><strong>Número de vitórias:</strong> Maior quantidade de vitórias.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] shrink-0 mt-0.5">
-                    3
-                  </span>
-                  <span><strong>Saldo de gols:</strong> Gols Pró (GP) menos Gols Contra (GC).</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] shrink-0 mt-0.5">
-                    4
-                  </span>
-                  <span><strong>Gols marcados:</strong> Maior quantidade de gols pró (GP).</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] shrink-0 mt-0.5">
-                    5
-                  </span>
-                  <span><strong>Confronto direto:</strong> Entre os clubes empatados.</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-bold text-[11px] shrink-0 mt-0.5">
-                    6
-                  </span>
-                  <span><strong>Sorteio:</strong> Pela coordenação da liga (RN21).</span>
-                </li>
-              </ol>
+              {/* Card 2: Ordem da Tabela (Figma L05) */}
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-3">
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900">Ordem da tabela</h3>
+                  <p className="text-xs text-slate-400 mt-0.5">Critérios de classificação, nesta ordem.</p>
+                </div>
+
+                <div className="space-y-2.5 pt-1">
+                  {[
+                    { num: 1, text: 'Mais pontos' },
+                    { num: 2, text: 'Maior saldo de gols' },
+                    { num: 3, text: 'Mais gols marcados' },
+                    { num: 4, text: 'Nome do clube, de A a Z' },
+                  ].map((item) => (
+                    <div key={item.num} className="flex items-center gap-2.5 text-xs text-slate-700">
+                      <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-semibold text-[11px] shrink-0">
+                        {item.num}
+                      </span>
+                      <span>{item.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
+
+          {/* Nota de rodapé da RN21 (Figma L05) */}
+          <p className="text-xs text-slate-400 pt-1">
+            Classificação de 1 a 6, com os clubes sem partidas zerados. Pontos, saldo e posição são calculados a cada consulta, nunca gravados (RN21).
+          </p>
         </div>
       )}
+
+      {/* Modal para simular/criar nova partida */}
+      <CreateMatchDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onMatchCreated={handleMatchCreated}
+      />
     </div>
   );
 }
