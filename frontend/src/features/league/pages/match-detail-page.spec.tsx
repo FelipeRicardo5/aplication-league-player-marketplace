@@ -191,21 +191,25 @@ describe('MatchDetailPage Component (Figma L03 / 60:158515)', () => {
     expect(await screen.findByText('Voltar para partidas')).toBeInTheDocument();
 
     // Scoreboard
-    expect(screen.getByText('Águias FC')).toBeInTheDocument();
-    expect(screen.getByText('Delta FC')).toBeInTheDocument();
+    expect(screen.getAllByText('Águias FC').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Delta FC').length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Tempo regulamentar')).toBeInTheDocument();
-    expect(screen.getByText('Vitória Mandante')).toBeInTheDocument();
+    expect(screen.getByText('Vitória do mandante')).toBeInTheDocument();
 
     // Horizontal Pitch
     expect(screen.getByText('Em campo')).toBeInTheDocument();
+    expect(screen.getByText('Mal condicionado')).toBeInTheDocument();
+    expect(screen.getByText('Gol no duelo')).toBeInTheDocument();
     expect(
-      screen.getByText('Disposição tática dos 5 titulares de cada clube durante o confronto.'),
+      screen.getByText(
+        'Titulares de cada clube na formação da partida e os valores usados nos duelos, já com o efeito da condição.',
+      ),
     ).toBeInTheDocument();
 
-    // 6 Tactical Duels
-    expect(screen.getByText('6 Duelos Táticos')).toBeInTheDocument();
-    expect(screen.getByText(/Turno Mandante/i)).toBeInTheDocument();
-    expect(screen.getByText(/Turno Visitante/i)).toBeInTheDocument();
+    // Duelos table
+    expect(screen.getByText('Duelos')).toBeInTheDocument();
+    expect(screen.getByText(/Ataques do Águias FC \(mandante\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Ataques do Delta FC \(visitante\)/i)).toBeInTheDocument();
 
     // Attackers & Defenders in duels
     expect(screen.getAllByText('Otto Rangel').length).toBeGreaterThanOrEqual(1);
@@ -220,7 +224,7 @@ describe('MatchDetailPage Component (Figma L03 / 60:158515)', () => {
     // Footnote
     expect(
       screen.getByText(
-        '* Toda partida grava o placar e os 6 duelos táticos e nunca é recalculada nem editada (RN20, RN21).',
+        /Mesma tela logo depois de jogar e ao abrir uma partida do histórico/i,
       ),
     ).toBeInTheDocument();
   });

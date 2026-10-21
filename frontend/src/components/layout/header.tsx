@@ -1,6 +1,9 @@
 import { PanelLeft, ChevronRight, RotateCw } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
+import { fetchMatchById } from '@/features/league/api/league-api';
+import { fetchClubById } from '@/features/clubs/api/clubs-api';
 
 interface HeaderProps {
   sidebarOpen: boolean;
@@ -9,20 +12,56 @@ interface HeaderProps {
 
 export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
   const location = useLocation();
+  const path = location.pathname;
+  const parts = path.split('/').filter(Boolean);
+
+  const isMatchDetail = parts[0] === 'matches' && parts.length > 1 && !isNaN(Number(parts[1]));
+  const matchId = isMatchDetail ? Number(parts[1]) : undefined;
+
+  const isClubDetail = parts[0] === 'clubs' && parts.length > 1 && !isNaN(Number(parts[1]));
+  const clubId = isClubDetail ? Number(parts[1]) : undefined;
+
+  const { data: match } = useQuery({
+    queryKey: ['match', matchId],
+    queryFn: () => fetchMatchById(matchId!),
+    enabled: Boolean(matchId),
+    staleTime: 1000 * 60,
+  });
+
+  const { data: club } = useQuery({
+    queryKey: ['club', clubId],
+    queryFn: () => fetchClubById(clubId!),
+    enabled: Boolean(clubId),
+    staleTime: 1000 * 60,
+  });
 
   const getBreadcrumb = () => {
-    const path = location.pathname;
     if (path.startsWith('/players')) {
       return { category: 'Mercado', current: 'Jogadores' };
     }
     if (path.startsWith('/clubs')) {
-      const parts = path.split('/').filter(Boolean);
-      if (parts.length > 1) {
-        return { category: 'Mercado', current: 'Detalhes do Clube' };
+      if (isClubDetail) {
+        return {
+          category: 'Mercado',
+          section: 'Clubes',
+          sectionHref: '/clubs',
+          current: club?.name || 'Detalhes do Clube',
+        };
       }
       return { category: 'Mercado', current: 'Clubes' };
     }
     if (path.startsWith('/matches')) {
+      if (isMatchDetail) {
+        const matchTitle = match
+          ? `${match.home.club_name} ${match.home.goals} × ${match.away.goals} ${match.away.club_name}`
+          : 'Partida';
+        return {
+          category: 'Liga',
+          section: 'Partidas',
+          sectionHref: '/matches',
+          current: matchTitle,
+        };
+      }
       return { category: 'Liga', current: 'Partidas' };
     }
     if (path.startsWith('/standings')) {
@@ -54,8 +93,25 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
           className="flex items-center gap-1.5 text-xs text-slate-500 font-medium"
         >
           <span>{breadcrumb.category}</span>
-          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
-          <span className="text-slate-900 font-semibold">{breadcrumb.current}</span>
+          <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+          {breadcrumb.section && (
+            <>
+              {breadcrumb.sectionHref ? (
+                <Link
+                  to={breadcrumb.sectionHref}
+                  className="hover:text-slate-900 transition-colors"
+                >
+                  {breadcrumb.section}
+                </Link>
+              ) : (
+                <span>{breadcrumb.section}</span>
+              )}
+              <ChevronRight className="h-3.5 w-3.5 text-slate-400 shrink-0" />
+            </>
+          )}
+          <span className="text-slate-900 font-semibold truncate max-w-[200px] sm:max-w-md">
+            {breadcrumb.current}
+          </span>
         </nav>
       </div>
 
