@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isValidBrasiliaIsoDateTime } from '../../domain/iso-datetime';
 
 export const buyPlayerSchema = z
   .object({
@@ -17,12 +18,13 @@ export const buyPlayerSchema = z
         error:
           'loyalty_until é obrigatório e deve ser uma string de data no formato ISO com offset -03:00',
       })
-      .refine((val) => /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?-03:00$/.test(val), {
+      .refine((val) => isValidBrasiliaIsoDateTime(val), {
         message:
-          'loyalty_until deve estar no formato AAAA-MM-DDTHH:MM-03:00 ou AAAA-MM-DDTHH:MM:SS-03:00',
+          'loyalty_until deve estar no formato AAAA-MM-DDTHH:MM-03:00 ou AAAA-MM-DDTHH:MM:SS-03:00 e corresponder a uma data e hora válidas',
       })
       .refine(
         (val) => {
+          if (!isValidBrasiliaIsoDateTime(val)) return false;
           const date = new Date(val);
           if (isNaN(date.getTime())) return false;
           const now = Date.now();
