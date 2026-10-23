@@ -19,18 +19,22 @@ export function ErrorState({
     <div
       role="alert"
       className={cn(
-        'flex flex-col items-center justify-center p-8 text-center rounded-xl border border-destructive/20 bg-destructive-subtle/50 my-4',
+        'rounded-2xl border border-red-200 bg-[#FEF2F2]/60 p-12 sm:p-16 shadow-xs flex flex-col items-center justify-center min-h-[360px] sm:min-h-[380px] text-center my-4',
         className,
       )}
     >
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10 text-destructive mb-4">
+      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-red-100 text-[#BF000F] mb-4 border border-red-200/80">
         <AlertCircle className="h-6 w-6 text-[#BF000F]" />
       </div>
-      <h3 className="text-base font-semibold text-foreground mb-1">{title}</h3>
-      <p className="text-sm text-muted-foreground max-w-sm mb-6">{message}</p>
+      <h3 className="text-base font-bold text-slate-900 mb-1.5">{title}</h3>
+      <p className="text-xs sm:text-sm text-slate-600 max-w-md mb-6 leading-relaxed">{message}</p>
       {onRetry && (
-        <Button onClick={onRetry} variant="outline" size="sm" className="gap-2">
-          <RotateCcw className="h-4 w-4" />
+        <Button
+          onClick={onRetry}
+          variant="outline"
+          className="gap-2 border-red-200 bg-white hover:bg-red-50 text-slate-800 text-xs sm:text-sm font-medium h-9 px-4 rounded-lg shadow-xs cursor-pointer"
+        >
+          <RotateCcw className="h-4 w-4 text-slate-500" />
           Tentar novamente
         </Button>
       )}
