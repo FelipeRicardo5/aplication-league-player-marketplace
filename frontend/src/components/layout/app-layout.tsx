@@ -46,15 +46,6 @@ export function AppLayout() {
         />
       </aside>
 
-      {/* Mobile Backdrop Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-10 bg-black/20 md:hidden backdrop-blur-xs transition-opacity"
-          onClick={() => setSidebarOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
       {/* Floating Main Content Card */}
       <div
         className={cn(
@@ -64,6 +55,14 @@ export function AppLayout() {
             : 'w-full md:w-[calc(100%-4.25rem)] ml-0 md:ml-[4.25rem] translate-x-0',
         )}
       >
+        {/* Mobile Backdrop Overlay - cobre apenas o card de conteúdo quando empurrado */}
+        {sidebarOpen && (
+          <div
+            className="absolute inset-0 z-30 bg-black/20 md:hidden backdrop-blur-xs transition-opacity cursor-pointer"
+            onClick={() => setSidebarOpen(false)}
+            aria-hidden="true"
+          />
+        )}
         <Header sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8">
           <Outlet />
