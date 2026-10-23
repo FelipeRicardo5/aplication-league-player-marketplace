@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import type { clubes, jogadores } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
@@ -25,6 +26,11 @@ interface PlayerSeedInput {
   condition?: Condition;
   clubAcronym?: string;
   isStarter?: boolean;
+}
+
+interface SeedPlayerRecord extends jogadores {
+  isStarter: boolean;
+  attributes: PlayerAttributes;
 }
 
 const POSITION_WEIGHTS: Record<Position, PlayerAttributes> = {
@@ -1156,7 +1162,7 @@ async function main() {
 
   // 2. Criação dos Clubes
   console.log('🏟️ Cadastrando clubes...');
-  const clubByAcronym = new Map<string, any>();
+  const clubByAcronym = new Map<string, clubes>();
 
   for (const c of CLUBS_DATA) {
     const createdClub = await prisma.clubes.create({
@@ -1174,7 +1180,7 @@ async function main() {
 
   // 3. Criação dos Jogadores
   console.log('⚽ Cadastrando jogadores...');
-  const playerRecords: any[] = [];
+  const playerRecords: SeedPlayerRecord[] = [];
   const clubExpenditures = new Map<number, number>();
 
   for (const p of PLAYERS_DATA) {
@@ -1268,9 +1274,7 @@ async function main() {
   console.log('📋 Definindo escalações titulares...');
   for (const c of CLUBS_DATA) {
     const club = clubByAcronym.get(c.sigla);
-    const starters = playerRecords.filter(
-      (p) => p.clube_id === club.id && p.isStarter === true,
-    );
+    const starters = playerRecords.filter((p) => p.clube_id === club.id && p.isStarter === true);
 
     if (starters.length !== 5) {
       console.warn(`  ⚠️ Alerta: Clube ${c.nome} possui ${starters.length} titulares (esperado 5)`);
