@@ -28,6 +28,7 @@ import { ClubTransactionsTab } from '@/features/transactions/components/club-tra
 import { SellPlayerDialog } from '@/features/market/components/sell-player-dialog';
 import { CardSkeleton, TableSkeleton } from '@/components/feedback/loading-skeleton';
 import { ErrorState } from '@/components/feedback/error-state';
+import { EmptyState } from '@/components/feedback/empty-state';
 import type { ClubPlayer } from '../types';
 import { cn } from '@/lib/utils';
 
@@ -46,9 +47,7 @@ export function ClubDetailPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <CardSkeleton count={4} />
         </div>
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
-          <TableSkeleton rows={6} cols={6} />
-        </div>
+        <TableSkeleton rows={6} cols={6} />
       </div>
     );
   }
@@ -229,28 +228,14 @@ export function ClubDetailPage() {
       {activeTab === 'squad' && (
         <div className="space-y-4">
           {players.length === 0 ? (
-            /* Empty state oficial do Figma 54-139627 */
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-12 shadow-xs flex flex-col items-center justify-center min-h-[380px] text-center">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-600 mb-3 border border-slate-200/60">
-                <Shirt className="h-6 w-6" />
-              </div>
-              <h3 className="text-base font-bold text-slate-900 mb-1.5">
-                Nenhum jogador no elenco
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-md mb-6 leading-relaxed">
-                Compre jogadores livres para montar o elenco. O limite é de 12 jogadores, e o custo de cada compra não pode passar de 50% do caixa.
-              </p>
-              <Button
-                asChild
-                variant="outline"
-                className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-xs sm:text-sm font-medium h-9 px-4 cursor-pointer"
-              >
-                <Link to={`/players?free=true&buyerClubId=${club.id}`}>
-                  <Users className="h-4 w-4 text-slate-500" />
-                  Ver jogadores livres
-                </Link>
-              </Button>
-            </div>
+            <EmptyState
+              icon={<Shirt className="h-6 w-6 text-slate-500" />}
+              title="Nenhum jogador no elenco"
+              description="Compre jogadores livres para montar o elenco. O limite é de 12 jogadores, e o custo de cada compra não pode passar de 50% do caixa."
+              actionLabel="Ver jogadores livres"
+              actionIcon={<Users className="h-4 w-4" />}
+              actionHref={`/players?free=true&buyerClubId=${club.id}`}
+            />
           ) : (
             <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
               <Table>

@@ -185,9 +185,7 @@ export function MatchesPage() {
 
         {/* Content states */}
         {isLoading ? (
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
-            <TableSkeleton rows={5} cols={6} />
-          </div>
+          <TableSkeleton rows={5} cols={6} />
         ) : isError ? (
           <ErrorState
             title="Erro ao carregar partidas"
@@ -196,10 +194,11 @@ export function MatchesPage() {
           />
         ) : !matches || matches.length === 0 ? (
           <EmptyState
-            icon={<Swords className="h-6 w-6 text-slate-400" />}
+            icon={<Swords className="h-6 w-6 text-slate-500" />}
             title="Nenhuma partida disputada"
             description="Ainda não foram jogadas partidas na liga ou para o clube selecionado."
-            actionLabel="Simular Primeira Partida"
+            actionLabel="Nova partida"
+            actionIcon={<Plus className="h-4 w-4" />}
             onAction={() => setCreateOpen(true)}
           />
         ) : (

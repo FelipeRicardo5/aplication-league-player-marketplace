@@ -12,6 +12,7 @@ import { PlayerDeleteDialog } from '../components/player-delete-dialog';
 import { BuyPlayerDialog } from '@/features/market/components/buy-player-dialog';
 import { TableSkeleton } from '@/components/feedback/loading-skeleton';
 import { ErrorState } from '@/components/feedback/error-state';
+import { EmptyState } from '@/components/feedback/empty-state';
 import { usePlayersQuery } from '../hooks/use-players';
 import type { Player, PlayersListResponse, QueryPlayersParams } from '../types';
 import { useQuery } from '@tanstack/react-query';
@@ -143,6 +144,15 @@ export function PlayersPage() {
           message={error?.message || 'Falha ao buscar a lista de jogadores da API.'}
           onRetry={refetch}
         />
+      ) : counts.all === 0 && !filters.search && !filters.position && !filters.condition && !filters.club_id ? (
+        <EmptyState
+          icon={<Users className="h-6 w-6 text-slate-500" />}
+          title="Nenhum jogador cadastrado"
+          description="Cadastre o primeiro atleta com nome, idade e atributos para começar a montar o mercado da liga."
+          actionLabel="Cadastrar jogador"
+          actionIcon={<UserPlus className="h-4 w-4" />}
+          onAction={() => setCreateOpen(true)}
+        />
       ) : (
         <div className="space-y-4">
           <PlayersTable
@@ -152,6 +162,7 @@ export function PlayersPage() {
             counts={counts}
             sort={filters.sort || 'name'}
             onSortChange={handleSortChange}
+            onResetFilters={handleResetFilters}
             onViewDetail={(p) => setDetailPlayer(p)}
             onEdit={(p) => setEditPlayer(p)}
             onChangeCondition={(p) => setConditionPlayer(p)}

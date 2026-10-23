@@ -7,6 +7,7 @@ import { ClubCreateDialog } from '../components/club-create-dialog';
 import { useClubsQuery } from '../hooks/use-clubs';
 import { TableSkeleton } from '@/components/feedback/loading-skeleton';
 import { ErrorState } from '@/components/feedback/error-state';
+import { EmptyState } from '@/components/feedback/empty-state';
 
 export function ClubsPage() {
   const navigate = useNavigate();
@@ -42,9 +43,7 @@ export function ClubsPage() {
 
       {/* Content states */}
       {isLoading ? (
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
-          <TableSkeleton rows={6} cols={6} />
-        </div>
+        <TableSkeleton rows={6} cols={6} />
       ) : isError ? (
         <ErrorState
           title="Erro ao carregar clubes"
@@ -52,23 +51,14 @@ export function ClubsPage() {
           onRetry={refetch}
         />
       ) : clubs && clubs.length === 0 ? (
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-16 shadow-xs flex flex-col items-center justify-center min-h-[420px] text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-500 mb-4 border border-slate-200/60">
-            <Shield className="h-6 w-6" />
-          </div>
-          <h2 className="text-base font-bold text-slate-900 mb-1.5">Nenhum clube cadastrado</h2>
-          <p className="text-xs sm:text-sm text-slate-500 max-w-sm mb-6 leading-relaxed">
-            Crie o primeiro clube com nome e sigla. Ele começa com 300,00 em caixa e sem jogadores.
-          </p>
-          <Button
-            onClick={() => setCreateOpen(true)}
-            variant="outline"
-            className="gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-xs sm:text-sm font-medium h-9 px-4 shadow-xs cursor-pointer"
-          >
-            <Plus className="h-4 w-4" />
-            Novo clube
-          </Button>
-        </div>
+        <EmptyState
+          icon={<Shield className="h-6 w-6 text-slate-500" />}
+          title="Nenhum clube cadastrado"
+          description="Crie o primeiro clube com nome e sigla. Ele começa com 300,00 em caixa e sem jogadores."
+          actionLabel="Novo clube"
+          actionIcon={<Plus className="h-4 w-4" />}
+          onAction={() => setCreateOpen(true)}
+        />
       ) : (
         <ClubsTable
           clubs={clubs ?? []}

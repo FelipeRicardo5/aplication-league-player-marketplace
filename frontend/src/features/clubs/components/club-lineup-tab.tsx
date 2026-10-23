@@ -21,6 +21,7 @@ import type { ClubDetail, FormationType } from '../types';
 import type { Player } from '@/features/players/types';
 import { ApiError } from '@/lib/api';
 import { cn } from '@/lib/utils';
+import { TableSkeleton } from '@/components/feedback/loading-skeleton';
 
 interface ClubLineupTabProps {
   club: ClubDetail;
@@ -413,11 +414,7 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
   };
 
   if (isLoading) {
-    return (
-      <div className="rounded-2xl border border-slate-200/80 bg-white p-12 text-center text-xs text-slate-400">
-        Carregando escalação tática...
-      </div>
-    );
+    return <TableSkeleton rows={5} cols={4} />;
   }
 
   return (

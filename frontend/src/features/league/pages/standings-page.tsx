@@ -85,9 +85,7 @@ export function StandingsPage() {
 
       {/* Content states */}
       {isLoading ? (
-        <div className="rounded-2xl border border-slate-200/80 bg-white p-4">
-          <TableSkeleton rows={8} cols={10} />
-        </div>
+        <TableSkeleton rows={8} cols={10} />
       ) : isError ? (
         <ErrorState
           title="Erro ao carregar classificação"

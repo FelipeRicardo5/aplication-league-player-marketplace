@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Download, History, AlertCircle } from 'lucide-react';
+import { Download, History } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Select,
@@ -21,6 +21,7 @@ import { formatCurrency, formatDateTime } from '@/lib/formatters';
 import { fetchClubTransactions, downloadTransactionsCsv } from '../api/transactions-api';
 import type { TransactionsSummary } from '../types';
 import { TableSkeleton } from '@/components/feedback/loading-skeleton';
+import { ErrorState } from '@/components/feedback/error-state';
 import { useToast } from '@/components/feedback/use-toast';
 import { cn } from '@/lib/utils';
 
@@ -365,39 +366,11 @@ export function ClubTransactionsTab({
       {isLoading ? (
         <TableSkeleton rows={5} cols={8} />
       ) : isError ? (
-        <div className="rounded-2xl border border-rose-200 bg-rose-50/70 p-6 shadow-xs">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <h3 className="text-sm font-bold text-rose-900">
-                Erro ao carregar transações
-              </h3>
-              <p className="text-xs text-rose-700 mt-1 leading-relaxed">
-                {error?.message || 'Falha ao buscar histórico financeiro do clube.'}
-              </p>
-              <div className="flex items-center gap-2 mt-4">
-                {selectedPlayerId !== undefined && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setSelectedPlayerId(undefined)}
-                    className="h-8 text-xs border-rose-300 bg-white text-rose-800 hover:bg-rose-50 cursor-pointer"
-                  >
-                    Limpar filtro de jogador
-                  </Button>
-                )}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => refetch()}
-                  className="h-8 text-xs border-rose-300 bg-white text-rose-800 hover:bg-rose-50 cursor-pointer"
-                >
-                  Tentar novamente
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <ErrorState
+          title="Erro ao carregar transações"
+          message={error?.message || 'Falha ao buscar histórico financeiro do clube.'}
+          onRetry={refetch}
+        />
       ) : transactions.length === 0 ? (
         <div className="rounded-2xl border border-slate-200/80 bg-white shadow-xs overflow-hidden">
           <div className="p-12 flex flex-col items-center justify-center min-h-[280px] text-center">

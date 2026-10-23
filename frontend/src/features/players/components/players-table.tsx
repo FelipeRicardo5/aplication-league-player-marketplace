@@ -1,4 +1,4 @@
-import { MoreHorizontal, Eye, Edit, HeartPulse, ShoppingCart, Trash2 } from 'lucide-react';
+import { MoreHorizontal, Eye, Edit, HeartPulse, ShoppingCart, Trash2, Search, RotateCcw } from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -43,6 +43,7 @@ export interface PlayersTableProps {
   counts?: { all: number; free: number; club: number };
   sort?: string;
   onSortChange?: (sort: string) => void;
+  onResetFilters?: () => void;
   onViewDetail: (player: Player) => void;
   onEdit: (player: Player) => void;
   onChangeCondition: (player: Player) => void;
@@ -57,6 +58,7 @@ export function PlayersTable({
   counts = { all: players.length, free: 0, club: 0 },
   sort = 'name',
   onSortChange,
+  onResetFilters,
   onViewDetail,
   onEdit,
   onChangeCondition,
@@ -266,12 +268,27 @@ export function PlayersTable({
         <TableBody>
           {players.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={10} className="h-44 text-center py-8">
-                <div className="flex flex-col items-center justify-center gap-1.5">
-                  <p className="text-sm font-semibold text-slate-800">Nenhum jogador encontrado</p>
-                  <p className="text-xs text-muted-foreground max-w-sm">
+              <TableCell colSpan={10} className="py-16 text-center">
+                <div className="flex flex-col items-center justify-center">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-500 mb-4 border border-slate-200/60">
+                    <Search className="h-6 w-6" />
+                  </div>
+                  <h3 className="text-base font-bold text-slate-900 mb-1.5">
+                    Nenhum jogador encontrado
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 max-w-sm mb-6 leading-relaxed">
                     Nenhum atleta corresponde aos filtros ou à situação selecionada nesta visualização.
                   </p>
+                  {onResetFilters && (
+                    <Button
+                      onClick={onResetFilters}
+                      variant="outline"
+                      className="gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 rounded-lg text-xs sm:text-sm font-medium h-9 px-4 shadow-xs cursor-pointer"
+                    >
+                      <RotateCcw className="h-4 w-4 text-slate-500" />
+                      Limpar filtros
+                    </Button>
+                  )}
                 </div>
               </TableCell>
             </TableRow>
