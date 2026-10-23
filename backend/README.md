@@ -57,6 +57,7 @@ As configurações são gerenciadas pelo NestJS `ConfigService` e mapeadas no ar
 | `CORS_ORIGIN`  | Origens autorizadas para CORS (separadas por vírgula)     | `http://localhost:5173`                                                      |
 | `LOG_LEVEL`    | Nível de logs (`trace`, `debug`, `info`, `warn`, `error`) | `info`                                                                       |
 | `NODE_ENV`     | Ambiente (`development`, `production`, `test`)            | `development`                                                                |
+| `SEED_DB`      | Execução opcional do seed no container                    | `true`                                                                       |
 
 ---
 

@@ -25,4 +25,4 @@ COPY --from=builder /app/dist ./dist
 
 EXPOSE 3000
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node --no-warnings --experimental-strip-types prisma/seed.ts && node dist/main"]
+CMD ["sh", "-c", "npx prisma migrate deploy && if [ \"$SEED_DB\" = \"true\" ]; then node --no-warnings --experimental-strip-types prisma/seed.ts; fi && node dist/main"]

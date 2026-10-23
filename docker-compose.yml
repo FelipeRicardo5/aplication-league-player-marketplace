@@ -31,6 +31,7 @@ services:
       PORT: 3000
       CORS_ORIGIN: http://localhost:${FRONTEND_PORT:-5173}
       NODE_ENV: production
+      SEED_DB: ${SEED_DB:-true}
     ports:
       - "${API_PORT:-3000}:3000"
     healthcheck:

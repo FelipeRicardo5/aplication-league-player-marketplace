@@ -62,7 +62,11 @@ docker compose up --build
 - **Verificação de Saúde (Healthcheck)**: `http://localhost:3000/api/v1/health`
 - **Documentação Interativa Swagger (OpenAPI)**: `http://localhost:3000/api/docs`
 
-O container da API aguarda a prontidão do PostgreSQL (`pg_isready`), executa as migrações (`prisma migrate deploy`) e a carga inicial de dados idempotente (`prisma/seed.ts`), garantindo que a aplicação abra imediatamente populada com os 8 clubes e jogadores da liga.
+O container da API aguarda a prontidão do PostgreSQL (`pg_isready`), executa as migrações (`prisma migrate deploy`) e, caso `SEED_DB=true` (padrão), realiza a carga inicial de dados (`prisma/seed.ts`). Para subir a aplicação com o banco limpo (sem seed), basta passar a variável:
+
+```bash
+SEED_DB=false docker compose up --build
+```
 
 ### 3.2 Execução Local (Passo a passo no Ubuntu 24.04 / Linux / macOS / Windows)
 
@@ -122,6 +126,7 @@ As configurações do backend são lidas exclusivamente de variáveis de ambient
 | `CORS_ORIGIN`  | Origens autorizadas para CORS (separadas por vírgula, sem `*`)                      | `http://localhost:5173`                                                      |
 | `LOG_LEVEL`    | Nível mínimo de logs da biblioteca Pino (`trace`, `debug`, `info`, `warn`, `error`) | `info`                                                                       |
 | `NODE_ENV`     | Ambiente de execução (`development`, `production`, `test`)                          | `development`                                                                |
+| `SEED_DB`      | Execução opcional do seed no container (`true` para executar, `false` para ignorar)  | `true`                                                                       |
 
 ### 4.2 Frontend (`frontend/.env.example`)
 
