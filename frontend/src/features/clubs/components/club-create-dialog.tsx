@@ -73,9 +73,7 @@ export function ClubCreateDialog({ open, onOpenChange, onSuccess }: ClubCreateDi
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="max-w-md p-6 bg-white rounded-2xl shadow-lg border border-slate-200">
         <DialogHeader className="pb-1">
-          <DialogTitle className="text-base font-bold text-slate-900">
-            Novo clube
-          </DialogTitle>
+          <DialogTitle className="text-base font-bold text-slate-900">Novo clube</DialogTitle>
           <DialogDescription className="text-xs text-slate-500">
             Informe o nome e a sigla do clube.
           </DialogDescription>
@@ -115,7 +113,8 @@ export function ClubCreateDialog({ open, onOpenChange, onSuccess }: ClubCreateDi
               <p className="text-[11px] text-rose-600">{errors.name.message}</p>
             ) : (
               <p className="text-[11px] text-slate-500">
-                De 3 a 60 caracteres e de 2 a 5 palavras; só letras, espaços, hífen e ponto. Não pode repetir outro clube.
+                De 3 a 60 caracteres e de 2 a 5 palavras; só letras, espaços, hífen e ponto. Não
+                pode repetir outro clube.
               </p>
             )}
           </div>
@@ -140,7 +139,8 @@ export function ClubCreateDialog({ open, onOpenChange, onSuccess }: ClubCreateDi
               <p className="text-[11px] text-rose-600">{errors.acronym.message}</p>
             ) : (
               <p className="text-[11px] text-slate-500">
-                3 letras de A a Z, maiúsculas, que aparecem no nome nessa ordem; a primeira é a primeira letra do nome.
+                3 letras de A a Z, maiúsculas, que aparecem no nome nessa ordem; a primeira é a
+                primeira letra do nome.
               </p>
             )}
           </div>

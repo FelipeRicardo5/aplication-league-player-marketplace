@@ -141,10 +141,7 @@ function getFormationPitchPositions(formation: string, side: 'home' | 'away'): P
  * Formata os atributos utilizados pelo titular nos duelos da partida.
  * Ex.: 'GOL · Def 74', 'ZAG · Def 67', 'LAT · Dri 75 · Def 63', 'MEI · Pas 82', 'ATA · Fin 81'.
  */
-function getPlayerPitchAttributeSummary(
-  player: MatchDuelPlayer,
-  duels?: Match['duels'],
-): string {
+function getPlayerPitchAttributeSummary(player: MatchDuelPlayer, duels?: Match['duels']): string {
   const list = duels || [];
   const attackDuel = list.find((d) => d.attacker.player_id === player.player_id);
   const defDuel = list.find((d) => d.defender.player_id === player.player_id);
@@ -384,9 +381,7 @@ export function MatchDetailPage() {
               <h2 className="text-base sm:text-lg font-bold text-slate-900">
                 {match.home.club_name}
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Mandante · {match.home.formation}
-              </p>
+              <p className="text-xs text-slate-500 mt-0.5">Mandante · {match.home.formation}</p>
             </div>
             <div className="flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-slate-100 text-slate-800 font-bold text-sm border border-slate-200 shrink-0">
               {homeAcronym}
@@ -398,12 +393,8 @@ export function MatchDetailPage() {
             <div className="flex items-center justify-center px-4 py-1.5 rounded-xl bg-slate-100/80 border border-slate-200/60 font-sans tabular-nums font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-wide">
               {match.home.goals} × {match.away.goals}
             </div>
-            <span className="text-[11px] text-slate-500">
-              {formatDateTime(match.played_at)}
-            </span>
-            <span className="text-[10px] text-slate-400 font-medium">
-              Tempo regulamentar
-            </span>
+            <span className="text-[11px] text-slate-500">{formatDateTime(match.played_at)}</span>
+            <span className="text-[10px] text-slate-400 font-medium">Tempo regulamentar</span>
             <span className="inline-flex items-center px-3 py-0.5 rounded-full text-[11px] font-medium border border-slate-200/80 bg-white text-slate-700 shadow-2xs">
               {match.result === 'MANDANTE'
                 ? 'Vitória do mandante'
@@ -422,9 +413,7 @@ export function MatchDetailPage() {
               <h2 className="text-base sm:text-lg font-bold text-slate-900">
                 {match.away.club_name}
               </h2>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Visitante · {match.away.formation}
-              </p>
+              <p className="text-xs text-slate-500 mt-0.5">Visitante · {match.away.formation}</p>
             </div>
           </div>
         </div>
@@ -437,7 +426,8 @@ export function MatchDetailPage() {
           <div>
             <h3 className="text-sm sm:text-base font-bold text-slate-900">Em campo</h3>
             <p className="text-xs text-slate-500 mt-0.5">
-              Titulares de cada clube na formação da partida e os valores usados nos duelos, já com o efeito da condição.
+              Titulares de cada clube na formação da partida e os valores usados nos duelos, já com
+              o efeito da condição.
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs text-slate-600 shrink-0">
@@ -490,36 +480,130 @@ export function MatchDetailPage() {
                 strokeWidth="2"
               />
               {/* 4 Arcos de escanteio */}
-              <path d="M 20 36 A 16 16 0 0 0 36 20" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
-              <path d="M 20 384 A 16 16 0 0 1 36 400" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
-              <path d="M 980 36 A 16 16 0 0 1 964 20" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
-              <path d="M 980 384 A 16 16 0 0 0 964 400" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <path
+                d="M 20 36 A 16 16 0 0 0 36 20"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
+              <path
+                d="M 20 384 A 16 16 0 0 1 36 400"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
+              <path
+                d="M 980 36 A 16 16 0 0 1 964 20"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
+              <path
+                d="M 980 384 A 16 16 0 0 0 964 400"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
 
               {/* Linha de meio de campo */}
-              <line x1="500" y1="20" x2="500" y2="400" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <line
+                x1="500"
+                y1="20"
+                x2="500"
+                y2="400"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
               {/* Círculo central e ponto */}
-              <circle cx="500" cy="210" r="55" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <circle
+                cx="500"
+                cy="210"
+                r="55"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
               <circle cx="500" cy="210" r="3.5" fill="rgba(255,255,255,0.6)" />
 
               {/* Grande área Mandante (esquerda) e Visitante (direita) */}
-              <rect x="20" y="95" width="145" height="230" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
-              <rect x="835" y="95" width="145" height="230" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <rect
+                x="20"
+                y="95"
+                width="145"
+                height="230"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
+              <rect
+                x="835"
+                y="95"
+                width="145"
+                height="230"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
 
               {/* Pequena área Mandante e Visitante */}
-              <rect x="20" y="150" width="55" height="120" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
-              <rect x="925" y="150" width="55" height="120" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <rect
+                x="20"
+                y="150"
+                width="55"
+                height="120"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
+              <rect
+                x="925"
+                y="150"
+                width="55"
+                height="120"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
 
               {/* Pontos de pênalti */}
               <circle cx="115" cy="210" r="3" fill="rgba(255,255,255,0.6)" />
               <circle cx="885" cy="210" r="3" fill="rgba(255,255,255,0.6)" />
 
               {/* Meia-lua das grandes áreas */}
-              <path d="M 165 175 A 50 50 0 0 1 165 245" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
-              <path d="M 835 175 A 50 50 0 0 0 835 245" fill="none" stroke="rgba(255,255,255,0.4)" strokeWidth="2" />
+              <path
+                d="M 165 175 A 50 50 0 0 1 165 245"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
+              <path
+                d="M 835 175 A 50 50 0 0 0 835 245"
+                fill="none"
+                stroke="rgba(255,255,255,0.4)"
+                strokeWidth="2"
+              />
 
               {/* Redes dos gols externas */}
-              <rect x="6" y="175" width="14" height="70" rx="2" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
-              <rect x="980" y="175" width="14" height="70" rx="2" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" />
+              <rect
+                x="6"
+                y="175"
+                width="14"
+                height="70"
+                rx="2"
+                fill="none"
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth="1.5"
+              />
+              <rect
+                x="980"
+                y="175"
+                width="14"
+                height="70"
+                rx="2"
+                fill="none"
+                stroke="rgba(255,255,255,0.3)"
+                strokeWidth="1.5"
+              />
             </svg>
 
             {/* Pill no canto superior esquerdo dentro do campo: Mandante */}
@@ -648,7 +732,9 @@ export function MatchDetailPage() {
         <div className="p-5 border-b border-slate-200/80">
           <h3 className="text-sm sm:text-base font-bold text-slate-900">Duelos</h3>
           <p className="text-xs text-slate-500 mt-1 leading-relaxed">
-            Os 3 ataques do mandante e depois os 3 do visitante. Os jogadores de linha vão do 1º (o mais recuado) ao 4º (o mais avançado), pela ordem do elenco: o 4º ataca o goleiro, o 3º ataca o 1º e o 2º ataca o 2º.
+            Os 3 ataques do mandante e depois os 3 do visitante. Os jogadores de linha vão do 1º (o
+            mais recuado) ao 4º (o mais avançado), pela ordem do elenco: o 4º ataca o goleiro, o 3º
+            ataca o 1º e o 2º ataca o 2º.
           </p>
         </div>
 
@@ -697,7 +783,10 @@ export function MatchDetailPage() {
             {turnoMandanteDuels.map((d) => {
               const subtitles = getDuelSubtitles(d.order, match);
               return (
-                <TableRow key={`duel-${d.order}`} className="hover:bg-slate-50/60 transition-colors">
+                <TableRow
+                  key={`duel-${d.order}`}
+                  className="hover:bg-slate-50/60 transition-colors"
+                >
                   <TableCell className="text-center">
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
                       {d.order}
@@ -717,9 +806,7 @@ export function MatchDetailPage() {
                         <span className="font-bold text-xs sm:text-sm text-slate-900">
                           {d.attacker.player_name}
                         </span>
-                        <span className="text-[11px] text-slate-500">
-                          {subtitles.attacker}
-                        </span>
+                        <span className="text-[11px] text-slate-500">{subtitles.attacker}</span>
                       </div>
                     </div>
                   </TableCell>
@@ -743,9 +830,7 @@ export function MatchDetailPage() {
                         <span className="font-bold text-xs sm:text-sm text-slate-900">
                           {d.defender.player_name}
                         </span>
-                        <span className="text-[11px] text-slate-500">
-                          {subtitles.defender}
-                        </span>
+                        <span className="text-[11px] text-slate-500">{subtitles.defender}</span>
                       </div>
                     </div>
                   </TableCell>
@@ -792,7 +877,10 @@ export function MatchDetailPage() {
             {turnoVisitanteDuels.map((d) => {
               const subtitles = getDuelSubtitles(d.order, match);
               return (
-                <TableRow key={`duel-${d.order}`} className="hover:bg-slate-50/60 transition-colors">
+                <TableRow
+                  key={`duel-${d.order}`}
+                  className="hover:bg-slate-50/60 transition-colors"
+                >
                   <TableCell className="text-center">
                     <span className="inline-flex h-6 w-6 items-center justify-center rounded-lg bg-slate-100 text-slate-700 text-xs font-semibold">
                       {d.order}
@@ -812,9 +900,7 @@ export function MatchDetailPage() {
                         <span className="font-bold text-xs sm:text-sm text-slate-900">
                           {d.attacker.player_name}
                         </span>
-                        <span className="text-[11px] text-slate-500">
-                          {subtitles.attacker}
-                        </span>
+                        <span className="text-[11px] text-slate-500">{subtitles.attacker}</span>
                       </div>
                     </div>
                   </TableCell>
@@ -838,9 +924,7 @@ export function MatchDetailPage() {
                         <span className="font-bold text-xs sm:text-sm text-slate-900">
                           {d.defender.player_name}
                         </span>
-                        <span className="text-[11px] text-slate-500">
-                          {subtitles.defender}
-                        </span>
+                        <span className="text-[11px] text-slate-500">{subtitles.defender}</span>
                       </div>
                     </div>
                   </TableCell>
@@ -871,7 +955,9 @@ export function MatchDetailPage() {
 
       {/* Nota oficial do rodapé (Figma L03) */}
       <p className="text-[11px] text-slate-500 leading-relaxed">
-        Mesma tela logo depois de jogar e ao abrir uma partida do histórico, com as formações dos dois clubes e os 6 duelos. Os valores e a condição de cada titular vêm gravados nos duelos devolvidos pela API; mal condicionado joga com 15% a menos (RN20).
+        Mesma tela logo depois de jogar e ao abrir uma partida do histórico, com as formações dos
+        dois clubes e os 6 duelos. Os valores e a condição de cada titular vêm gravados nos duelos
+        devolvidos pela API; mal condicionado joga com 15% a menos (RN20).
       </p>
     </div>
   );

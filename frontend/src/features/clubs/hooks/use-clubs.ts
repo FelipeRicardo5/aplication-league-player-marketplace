@@ -42,10 +42,7 @@ export function useCreateClubMutation(onSuccessCallback?: (newClub: ClubSummary)
     mutationFn: (data: CreateClubFormInput) => createClub(data),
     onSuccess: (newClub) => {
       queryClient.invalidateQueries({ queryKey: ['clubs'] });
-      success(
-        'Clube criado',
-        `${newClub.name} (${newClub.acronym}) começa com 300,00 em caixa.`,
-      );
+      success('Clube criado', `${newClub.name} (${newClub.acronym}) começa com 300,00 em caixa.`);
       if (onSuccessCallback) onSuccessCallback(newClub);
     },
     onError: (err) => {

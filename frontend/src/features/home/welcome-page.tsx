@@ -91,19 +91,37 @@ export function WelcomePage() {
 
           {/* Círculo central e ponto central */}
           <circle cx="550" cy="340" r="85" />
-          <circle cx="550" cy="340" r="4" fill="currentColor" className="text-slate-300 dark:text-zinc-700" />
+          <circle
+            cx="550"
+            cy="340"
+            r="4"
+            fill="currentColor"
+            className="text-slate-300 dark:text-zinc-700"
+          />
 
           {/* Área esquerda (Goleira, Grande Área e Pequena Área) */}
           <rect x="25" y="140" width="165" height="400" />
           <rect x="25" y="240" width="60" height="200" />
           <path d="M 190 280 A 75 75 0 0 1 190 400" />
-          <circle cx="130" cy="340" r="3" fill="currentColor" className="text-slate-300 dark:text-zinc-700" />
+          <circle
+            cx="130"
+            cy="340"
+            r="3"
+            fill="currentColor"
+            className="text-slate-300 dark:text-zinc-700"
+          />
 
           {/* Área direita (Goleira, Grande Área e Pequena Área) */}
           <rect x="910" y="140" width="165" height="400" />
           <rect x="1015" y="240" width="60" height="200" />
           <path d="M 910 280 A 75 75 0 0 0 910 400" />
-          <circle cx="970" cy="340" r="3" fill="currentColor" className="text-slate-300 dark:text-zinc-700" />
+          <circle
+            cx="970"
+            cy="340"
+            r="3"
+            fill="currentColor"
+            className="text-slate-300 dark:text-zinc-700"
+          />
 
           {/* Escanteios */}
           <path d="M 25 55 A 30 30 0 0 0 55 25" />

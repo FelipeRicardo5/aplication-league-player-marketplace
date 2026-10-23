@@ -23,26 +23,36 @@ export function Sidebar({ onItemClick, className, isCollapsed = false }: Sidebar
   const { data: matches } = useMatchesQuery();
 
   const clubsCount = clubs?.length ?? 0;
-  const playersCount = playersData?.meta?.total_items ?? (playersData?.meta as unknown as { total?: number })?.total ?? 0;
-  const matchesCount = Array.isArray(matches) ? matches.length : ((matches as unknown as { data?: unknown[] })?.data?.length ?? 0);
+  const playersCount =
+    playersData?.meta?.total_items ??
+    (playersData?.meta as unknown as { total?: number })?.total ??
+    0;
+  const matchesCount = Array.isArray(matches)
+    ? matches.length
+    : ((matches as unknown as { data?: unknown[] })?.data?.length ?? 0);
 
   const lastMatch =
-    Array.isArray(matches) && matches.length > 0 ? [...matches].sort((a, b) => b.id - a.id)[0] : null;
+    Array.isArray(matches) && matches.length > 0
+      ? [...matches].sort((a, b) => b.id - a.id)[0]
+      : null;
 
   const lastMatchText = lastMatch
     ? `${lastMatch.home.club_name} ${lastMatch.home.goals} × ${lastMatch.away.goals} ${lastMatch.away.club_name}`
     : 'Sem partidas registradas';
 
   const getClubInitial = (name: string) => {
-    return name.trim().normalize('NFD').replace(/[\u0300-\u036f]/g, '').charAt(0).toUpperCase();
+    return name
+      .trim()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .charAt(0)
+      .toUpperCase();
   };
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
     cn(
       'flex items-center rounded-xl text-xs font-medium transition-all select-none group',
-      isCollapsed
-        ? 'justify-center p-2 w-10 h-10 mx-auto'
-        : 'gap-2.5 px-3 py-2 w-full',
+      isCollapsed ? 'justify-center p-2 w-10 h-10 mx-auto' : 'gap-2.5 px-3 py-2 w-full',
       isActive
         ? 'bg-white text-slate-900 font-medium border border-slate-200/90 shadow-xs'
         : 'text-slate-800 hover:bg-white/60 hover:text-slate-900 border border-transparent',
@@ -78,13 +88,16 @@ export function Sidebar({ onItemClick, className, isCollapsed = false }: Sidebar
       </NavLink>
 
       {/* Nav items */}
-      <div className={cn('flex-1 overflow-y-auto space-y-4 pr-1 min-h-0 w-full', isCollapsed ? 'pr-0' : '')}>
+      <div
+        className={cn(
+          'flex-1 overflow-y-auto space-y-4 pr-1 min-h-0 w-full',
+          isCollapsed ? 'pr-0' : '',
+        )}
+      >
         {/* Mercado Group */}
         <div>
           {!isCollapsed ? (
-            <h2 className="px-2.5 text-xs font-medium text-slate-500 mb-1.5">
-              Mercado
-            </h2>
+            <h2 className="px-2.5 text-xs font-medium text-slate-500 mb-1.5">Mercado</h2>
           ) : null}
           <nav className="space-y-1">
             <NavLink
@@ -154,9 +167,7 @@ export function Sidebar({ onItemClick, className, isCollapsed = false }: Sidebar
         {/* Liga Group */}
         <div>
           {!isCollapsed ? (
-            <h2 className="px-2.5 text-xs font-medium text-slate-500 mb-1.5">
-              Liga
-            </h2>
+            <h2 className="px-2.5 text-xs font-medium text-slate-500 mb-1.5">Liga</h2>
           ) : (
             <div className="w-6 h-px bg-slate-200/60 mx-auto my-2" />
           )}
@@ -205,7 +216,9 @@ export function Sidebar({ onItemClick, className, isCollapsed = false }: Sidebar
                       isActive ? 'text-[#155DFC]' : 'text-slate-700 group-hover:text-slate-900',
                     )}
                   />
-                  {!isCollapsed && <span className="text-slate-900 font-medium">Classificação</span>}
+                  {!isCollapsed && (
+                    <span className="text-slate-900 font-medium">Classificação</span>
+                  )}
                 </>
               )}
             </NavLink>
@@ -216,9 +229,7 @@ export function Sidebar({ onItemClick, className, isCollapsed = false }: Sidebar
         <div>
           {!isCollapsed ? (
             <div className="flex items-center justify-between px-2.5 mb-1.5">
-              <h2 className="text-xs font-medium text-slate-500">
-                Clubes
-              </h2>
+              <h2 className="text-xs font-medium text-slate-500">Clubes</h2>
               <NavLink
                 to="/clubs"
                 onClick={onItemClick}
@@ -262,7 +273,6 @@ export function Sidebar({ onItemClick, className, isCollapsed = false }: Sidebar
           </nav>
         </div>
       </div>
-
 
       {/* Footer Summary Card - Completamente ocultado/removido quando comprimido */}
       {!isCollapsed && (
@@ -309,5 +319,3 @@ export function Sidebar({ onItemClick, className, isCollapsed = false }: Sidebar
     </aside>
   );
 }
-
-

@@ -69,9 +69,7 @@ describe('Feedback States Components (Figma E01-E07 node 9:51815)', () => {
 
       expect(screen.getByRole('alert')).toBeInTheDocument();
       expect(screen.getByText('Erro ao carregar jogadores')).toBeInTheDocument();
-      expect(
-        screen.getByText('Falha ao buscar a lista de jogadores da API.'),
-      ).toBeInTheDocument();
+      expect(screen.getByText('Falha ao buscar a lista de jogadores da API.')).toBeInTheDocument();
 
       const retryBtn = screen.getByRole('button', { name: /Tentar novamente/i });
       expect(retryBtn).toBeInTheDocument();

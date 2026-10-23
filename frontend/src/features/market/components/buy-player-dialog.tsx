@@ -24,10 +24,7 @@ import { useToast } from '@/components/feedback/use-toast';
 import type { Player, Position } from '@/features/players/types';
 import { AlertCircle, AlertTriangle, ShoppingCart, Shield } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import {
-  BuyPlayerSuccessDialog,
-  type BuyTransactionResult,
-} from './buy-player-success-dialog';
+import { BuyPlayerSuccessDialog, type BuyTransactionResult } from './buy-player-success-dialog';
 
 interface ClubDetail {
   id: number;
@@ -184,7 +181,8 @@ export function BuyPlayerDialog({
               <span>Comprar jogador</span>
             </DialogTitle>
             <DialogDescription className="text-xs text-slate-500 mt-1">
-              Contrate o atleta livre para o elenco do clube, definindo o contrato e o término da fidelidade.
+              Contrate o atleta livre para o elenco do clube, definindo o contrato e o término da
+              fidelidade.
             </DialogDescription>
           </DialogHeader>
 
@@ -273,7 +271,11 @@ export function BuyPlayerDialog({
                 </SelectTrigger>
                 <SelectContent className="max-h-56">
                   {clubs?.map((club) => (
-                    <SelectItem key={club.id} value={String(club.id)} className="text-xs cursor-pointer">
+                    <SelectItem
+                      key={club.id}
+                      value={String(club.id)}
+                      className="text-xs cursor-pointer"
+                    >
                       <span className="font-semibold text-slate-900">{club.name}</span>{' '}
                       <span className="font-mono text-slate-400">({club.acronym})</span>{' '}
                       <span className="text-slate-500 font-sans ml-1">
@@ -319,8 +321,8 @@ export function BuyPlayerDialog({
                   <AlertTriangle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
                   <p className="text-[11px] leading-relaxed">
                     O custo ({formatCurrency(estimatedTotalCost, false)}) excede 50% do caixa do{' '}
-                    {selectedClub?.name} ({formatCurrency(maxAllowedCost, false)}). A API rejeitará a
-                    compra (RN13).
+                    {selectedClub?.name} ({formatCurrency(maxAllowedCost, false)}). A API rejeitará
+                    a compra (RN13).
                   </p>
                 </div>
               )}
@@ -376,7 +378,8 @@ export function BuyPlayerDialog({
                 </div>
               </div>
               <p className="text-[11px] text-slate-400 mt-1 leading-tight">
-                Horário de Brasília (UTC-3). A fidelidade deve ser uma data futura de até 3 anos (1.095 dias).
+                Horário de Brasília (UTC-3). A fidelidade deve ser uma data futura de até 3 anos
+                (1.095 dias).
               </p>
             </div>
 
@@ -384,7 +387,8 @@ export function BuyPlayerDialog({
             <div className="rounded-xl border border-slate-200/80 bg-slate-50/60 p-3 flex items-start gap-2.5 text-slate-600">
               <Shield className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
               <p className="text-[11px] leading-relaxed text-slate-500">
-                O contrato nasce ATIVO. Se o clube vender o jogador antes do fim da fidelidade, pagará multa à liga (RN15). O clube não poderá recomprar este jogador depois (RN12).
+                O contrato nasce ATIVO. Se o clube vender o jogador antes do fim da fidelidade,
+                pagará multa à liga (RN15). O clube não poderá recomprar este jogador depois (RN12).
               </p>
             </div>
 

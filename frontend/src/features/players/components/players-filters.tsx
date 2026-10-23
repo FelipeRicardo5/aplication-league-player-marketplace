@@ -122,12 +122,12 @@ export function PlayersFilters({ filters, onFilterChange, onReset }: PlayersFilt
 
   const hasActiveFilters = Boolean(
     searchTerm ||
-      filters.position ||
-      filters.condition ||
-      filters.club_id ||
-      filters.free ||
-      filters.min_age ||
-      filters.min_value,
+    filters.position ||
+    filters.condition ||
+    filters.club_id ||
+    filters.free ||
+    filters.min_age ||
+    filters.min_value,
   );
 
   return (

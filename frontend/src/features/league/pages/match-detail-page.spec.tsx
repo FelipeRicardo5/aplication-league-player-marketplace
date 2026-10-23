@@ -223,9 +223,7 @@ describe('MatchDetailPage Component (Figma L03 / 60:158515)', () => {
 
     // Footnote
     expect(
-      screen.getByText(
-        /Mesma tela logo depois de jogar e ao abrir uma partida do histórico/i,
-      ),
+      screen.getByText(/Mesma tela logo depois de jogar e ao abrir uma partida do histórico/i),
     ).toBeInTheDocument();
   });
 });

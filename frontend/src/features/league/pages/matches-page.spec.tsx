@@ -130,9 +130,7 @@ describe('MatchesPage Component (Figma L01 / 54:149535)', () => {
 
     expect(await screen.findByText('Nenhuma partida disputada')).toBeInTheDocument();
     expect(
-      screen.getByText(
-        'Ainda não foram jogadas partidas na liga ou para o clube selecionado.',
-      ),
+      screen.getByText('Ainda não foram jogadas partidas na liga ou para o clube selecionado.'),
     ).toBeInTheDocument();
   });
 });

@@ -130,4 +130,3 @@ export function Header({ sidebarOpen, onToggleSidebar }: HeaderProps) {
     </header>
   );
 }
-

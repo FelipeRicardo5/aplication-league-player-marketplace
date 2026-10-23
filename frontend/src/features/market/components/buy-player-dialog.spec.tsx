@@ -79,20 +79,13 @@ function createWrapper() {
 
 describe('BuyPlayerDialog Component (Figma node 9-43048 / M01)', () => {
   it('renders modal header, player summary with fee calculation and separated date/time inputs', async () => {
-    render(
-      <BuyPlayerDialog
-        player={mockPlayer}
-        open={true}
-        onOpenChange={vi.fn()}
-      />,
-      { wrapper: createWrapper() },
-    );
+    render(<BuyPlayerDialog player={mockPlayer} open={true} onOpenChange={vi.fn()} />, {
+      wrapper: createWrapper(),
+    });
 
     // Modal title & description
     expect(screen.getByRole('heading', { name: 'Comprar jogador' })).toBeInTheDocument();
-    expect(
-      screen.getByText(/Contrate o atleta livre para o elenco do clube/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Contrate o atleta livre para o elenco do clube/i)).toBeInTheDocument();
 
     // Player summary
     expect(screen.getByText('Meia Lua')).toBeInTheDocument();
@@ -110,17 +103,14 @@ describe('BuyPlayerDialog Component (Figma node 9-43048 / M01)', () => {
   });
 
   it('renders notice box with official league rules (RN12, RN13, RN15)', () => {
-    render(
-      <BuyPlayerDialog
-        player={mockPlayer}
-        open={true}
-        onOpenChange={vi.fn()}
-      />,
-      { wrapper: createWrapper() },
-    );
+    render(<BuyPlayerDialog player={mockPlayer} open={true} onOpenChange={vi.fn()} />, {
+      wrapper: createWrapper(),
+    });
 
     expect(
-      screen.getByText(/O contrato nasce ATIVO. Se o clube vender o jogador antes do fim da fidelidade/i),
+      screen.getByText(
+        /O contrato nasce ATIVO. Se o clube vender o jogador antes do fim da fidelidade/i,
+      ),
     ).toBeInTheDocument();
   });
 });
@@ -151,11 +141,7 @@ describe('BuyPlayerSuccessDialog Component (Figma node 54:143944 / M05)', () => 
 
   it('renders success dialog with full transaction details and navigation buttons', () => {
     render(
-      <BuyPlayerSuccessDialog
-        transaction={mockTransaction}
-        open={true}
-        onOpenChange={vi.fn()}
-      />,
+      <BuyPlayerSuccessDialog transaction={mockTransaction} open={true} onOpenChange={vi.fn()} />,
       { wrapper: createWrapper() },
     );
 

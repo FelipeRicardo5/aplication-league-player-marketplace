@@ -1,4 +1,13 @@
-import { MoreHorizontal, Eye, Edit, HeartPulse, ShoppingCart, Trash2, Search, RotateCcw } from 'lucide-react';
+import {
+  MoreHorizontal,
+  Eye,
+  Edit,
+  HeartPulse,
+  ShoppingCart,
+  Trash2,
+  Search,
+  RotateCcw,
+} from 'lucide-react';
 import {
   Table,
   TableBody,
@@ -259,7 +268,9 @@ export function PlayersTable({
             <TableHead className="min-w-[135px] text-xs font-semibold text-slate-600">
               Valor de mercado
             </TableHead>
-            <TableHead className="min-w-[150px] text-xs font-semibold text-slate-600">Clube</TableHead>
+            <TableHead className="min-w-[150px] text-xs font-semibold text-slate-600">
+              Clube
+            </TableHead>
             <TableHead className="w-[130px] text-right text-xs font-semibold text-slate-600">
               Ações
             </TableHead>
@@ -277,7 +288,8 @@ export function PlayersTable({
                     Nenhum jogador encontrado
                   </h3>
                   <p className="text-xs sm:text-sm text-slate-500 max-w-sm mb-6 leading-relaxed">
-                    Nenhum atleta corresponde aos filtros ou à situação selecionada nesta visualização.
+                    Nenhum atleta corresponde aos filtros ou à situação selecionada nesta
+                    visualização.
                   </p>
                   {onResetFilters && (
                     <Button
@@ -299,174 +311,175 @@ export function PlayersTable({
 
               return (
                 <TableRow key={player.id} className="hover:bg-slate-50/60 transition-colors">
-                {/* 1. Jogador */}
-                <TableCell>
-                  <div className="flex items-center gap-2.5">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700 shrink-0 border border-slate-200">
-                      {player.name
-                        .split(' ')
-                        .map((n) => n[0])
-                        .slice(0, 2)
-                        .join('')
-                        .toUpperCase()}
-                    </div>
-                    <div className="min-w-0">
-                      <button
-                        onClick={() => onViewDetail(player)}
-                        className="font-semibold text-sm text-foreground hover:text-primary transition-colors hover:underline text-left truncate block max-w-[180px] cursor-pointer"
-                        title={player.name}
-                      >
-                        {player.name}
-                      </button>
-                      <div className="text-xs text-muted-foreground font-mono">#{player.id}</div>
-                    </div>
-                  </div>
-                </TableCell>
-
-                {/* 2. Posição */}
-                <TableCell>{getPositionBadge(player.position)}</TableCell>
-
-                {/* 3. Overall */}
-                <TableCell>
-                  <span className="font-sans font-bold text-sm text-slate-900 tabular-nums">
-                    {player.overall}
-                  </span>
-                </TableCell>
-
-                {/* 4. Agilidade (Número + Mini Barra Gráfica) */}
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    <span className="font-sans text-xs font-semibold text-slate-800 w-6 tabular-nums">
-                      {player.agility}
-                    </span>
-                    <div className="h-1.5 w-14 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-200/50">
-                      <div
-                        className="h-full rounded-full bg-blue-600 transition-all duration-300"
-                        style={{ width: `${Math.min(100, Math.max(0, player.agility))}%` }}
-                      />
-                    </div>
-                  </div>
-                </TableCell>
-
-                {/* 5. Idade */}
-                <TableCell className="text-xs font-sans text-slate-700 tabular-nums">
-                  {player.age}
-                </TableCell>
-
-                {/* 6. Condição */}
-                <TableCell>{getConditionBadge(player.condition)}</TableCell>
-
-                {/* 7. Valor Base */}
-                <TableCell className="text-xs font-sans tabular-nums text-slate-600">
-                  {formatCurrency(player.base_value, false)}
-                </TableCell>
-
-                {/* 8. Valor de Mercado */}
-                <TableCell className="font-bold text-sm font-sans tabular-nums text-slate-900">
-                  {formatCurrency(player.market_value, false)}
-                </TableCell>
-
-                {/* 9. Clube */}
-                <TableCell>
-                  {club ? (
-                    <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-900">
-                      <span className="flex h-5 w-5 items-center justify-center rounded bg-slate-100 text-[10px] font-bold text-slate-700 border border-slate-200">
-                        {club.acronym}
-                      </span>
-                      <span className="truncate max-w-[120px]" title={club.name}>
-                        {club.name}
-                      </span>
-                    </span>
-                  ) : (
-                    <Badge
-                      variant="outline"
-                      className="text-[11px] font-medium text-slate-500 bg-slate-50 border-slate-200/90 rounded-md"
-                    >
-                      Livre
-                    </Badge>
-                  )}
-                </TableCell>
-
-                {/* 10. Ações: Botão Rápido Inline '+ Comprar' + Menu Contextual */}
-                <TableCell className="text-right">
-                  <div className="flex items-center justify-end gap-1.5">
-                    {isFree && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onBuy(player)}
-                        className="h-7 px-2 text-xs font-medium text-blue-600 border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:text-blue-700 gap-1 rounded-md cursor-pointer transition-colors"
-                        title="Comprar jogador para um clube"
-                      >
-                        <ShoppingCart className="h-3.5 w-3.5" />
-                        <span>Comprar</span>
-                      </Button>
-                    )}
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="icon-sm"
-                          aria-label={`Ações para ${player.name}`}
-                          className="h-7 w-7 text-slate-500 hover:text-slate-900 rounded-md cursor-pointer"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" className="w-48">
-                        <DropdownMenuLabel>Opções do jogador</DropdownMenuLabel>
-                        <DropdownMenuItem
+                  {/* 1. Jogador */}
+                  <TableCell>
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-700 shrink-0 border border-slate-200">
+                        {player.name
+                          .split(' ')
+                          .map((n) => n[0])
+                          .slice(0, 2)
+                          .join('')
+                          .toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <button
                           onClick={() => onViewDetail(player)}
-                          className="gap-2 cursor-pointer"
+                          className="font-semibold text-sm text-foreground hover:text-primary transition-colors hover:underline text-left truncate block max-w-[180px] cursor-pointer"
+                          title={player.name}
                         >
-                          <Eye className="h-4 w-4 text-muted-foreground" />
-                          Ver detalhes
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onEdit(player)}
-                          className="gap-2 cursor-pointer"
-                        >
-                          <Edit className="h-4 w-4 text-muted-foreground" />
-                          Editar jogador
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          onClick={() => onChangeCondition(player)}
-                          className="gap-2 cursor-pointer"
-                        >
-                          <HeartPulse className="h-4 w-4 text-muted-foreground" />
-                          Alterar condição
-                        </DropdownMenuItem>
+                          {player.name}
+                        </button>
+                        <div className="text-xs text-muted-foreground font-mono">#{player.id}</div>
+                      </div>
+                    </div>
+                  </TableCell>
 
-                        {isFree && (
-                          <>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem
-                              onClick={() => onBuy(player)}
-                              className="gap-2 cursor-pointer text-blue-600 font-medium focus:text-blue-600"
-                            >
-                              <ShoppingCart className="h-4 w-4 text-blue-600" />
-                              Comprar para clube
-                            </DropdownMenuItem>
-                          </>
-                        )}
+                  {/* 2. Posição */}
+                  <TableCell>{getPositionBadge(player.position)}</TableCell>
 
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onClick={() => onDelete(player)}
-                          disabled={!isFree}
-                          className="gap-2 text-destructive focus:text-destructive cursor-pointer disabled:cursor-not-allowed"
+                  {/* 3. Overall */}
+                  <TableCell>
+                    <span className="font-sans font-bold text-sm text-slate-900 tabular-nums">
+                      {player.overall}
+                    </span>
+                  </TableCell>
+
+                  {/* 4. Agilidade (Número + Mini Barra Gráfica) */}
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <span className="font-sans text-xs font-semibold text-slate-800 w-6 tabular-nums">
+                        {player.agility}
+                      </span>
+                      <div className="h-1.5 w-14 rounded-full bg-slate-100 overflow-hidden shrink-0 border border-slate-200/50">
+                        <div
+                          className="h-full rounded-full bg-blue-600 transition-all duration-300"
+                          style={{ width: `${Math.min(100, Math.max(0, player.agility))}%` }}
+                        />
+                      </div>
+                    </div>
+                  </TableCell>
+
+                  {/* 5. Idade */}
+                  <TableCell className="text-xs font-sans text-slate-700 tabular-nums">
+                    {player.age}
+                  </TableCell>
+
+                  {/* 6. Condição */}
+                  <TableCell>{getConditionBadge(player.condition)}</TableCell>
+
+                  {/* 7. Valor Base */}
+                  <TableCell className="text-xs font-sans tabular-nums text-slate-600">
+                    {formatCurrency(player.base_value, false)}
+                  </TableCell>
+
+                  {/* 8. Valor de Mercado */}
+                  <TableCell className="font-bold text-sm font-sans tabular-nums text-slate-900">
+                    {formatCurrency(player.market_value, false)}
+                  </TableCell>
+
+                  {/* 9. Clube */}
+                  <TableCell>
+                    {club ? (
+                      <span className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-900">
+                        <span className="flex h-5 w-5 items-center justify-center rounded bg-slate-100 text-[10px] font-bold text-slate-700 border border-slate-200">
+                          {club.acronym}
+                        </span>
+                        <span className="truncate max-w-[120px]" title={club.name}>
+                          {club.name}
+                        </span>
+                      </span>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="text-[11px] font-medium text-slate-500 bg-slate-50 border-slate-200/90 rounded-md"
+                      >
+                        Livre
+                      </Badge>
+                    )}
+                  </TableCell>
+
+                  {/* 10. Ações: Botão Rápido Inline '+ Comprar' + Menu Contextual */}
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-1.5">
+                      {isFree && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => onBuy(player)}
+                          className="h-7 px-2 text-xs font-medium text-blue-600 border-blue-200 bg-blue-50/50 hover:bg-blue-50 hover:text-blue-700 gap-1 rounded-md cursor-pointer transition-colors"
+                          title="Comprar jogador para um clube"
                         >
-                          <Trash2 className="h-4 w-4" />
-                          Excluir jogador
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          }))}
+                          <ShoppingCart className="h-3.5 w-3.5" />
+                          <span>Comprar</span>
+                        </Button>
+                      )}
+
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            aria-label={`Ações para ${player.name}`}
+                            className="h-7 w-7 text-slate-500 hover:text-slate-900 rounded-md cursor-pointer"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuLabel>Opções do jogador</DropdownMenuLabel>
+                          <DropdownMenuItem
+                            onClick={() => onViewDetail(player)}
+                            className="gap-2 cursor-pointer"
+                          >
+                            <Eye className="h-4 w-4 text-muted-foreground" />
+                            Ver detalhes
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onEdit(player)}
+                            className="gap-2 cursor-pointer"
+                          >
+                            <Edit className="h-4 w-4 text-muted-foreground" />
+                            Editar jogador
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onClick={() => onChangeCondition(player)}
+                            className="gap-2 cursor-pointer"
+                          >
+                            <HeartPulse className="h-4 w-4 text-muted-foreground" />
+                            Alterar condição
+                          </DropdownMenuItem>
+
+                          {isFree && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={() => onBuy(player)}
+                                className="gap-2 cursor-pointer text-blue-600 font-medium focus:text-blue-600"
+                              >
+                                <ShoppingCart className="h-4 w-4 text-blue-600" />
+                                Comprar para clube
+                              </DropdownMenuItem>
+                            </>
+                          )}
+
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            onClick={() => onDelete(player)}
+                            disabled={!isFree}
+                            className="gap-2 text-destructive focus:text-destructive cursor-pointer disabled:cursor-not-allowed"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                            Excluir jogador
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })
+          )}
         </TableBody>
       </Table>
     </div>

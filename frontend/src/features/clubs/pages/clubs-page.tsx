@@ -27,7 +27,8 @@ export function ClubsPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Clubes</h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Cada clube começa com 300,00 em caixa e sem jogadores. A liga aceita no máximo 20 clubes.
+              Cada clube começa com 300,00 em caixa e sem jogadores. A liga aceita no máximo 20
+              clubes.
             </p>
           </div>
         </div>
@@ -60,11 +61,7 @@ export function ClubsPage() {
           onAction={() => setCreateOpen(true)}
         />
       ) : (
-        <ClubsTable
-          clubs={clubs ?? []}
-          sort={sort}
-          onSortChange={setSort}
-        />
+        <ClubsTable clubs={clubs ?? []} sort={sort} onSortChange={setSort} />
       )}
 
       {/* Create Dialog */}

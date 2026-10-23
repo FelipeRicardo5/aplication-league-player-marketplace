@@ -112,7 +112,9 @@ export function ClubDetailPage() {
               </span>
               <span className="text-xs font-normal text-slate-400 ml-1.5">moedas</span>
             </div>
-            <span className="text-[11px] text-slate-400 mt-1 block">Só muda por compras e vendas</span>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              Só muda por compras e vendas
+            </span>
           </div>
         </div>
 
@@ -129,7 +131,9 @@ export function ClubDetailPage() {
               </span>
               <span className="text-xs font-normal text-slate-400 ml-1.5">moedas</span>
             </div>
-            <span className="text-[11px] text-slate-400 mt-1 block">Soma dos valores de mercado</span>
+            <span className="text-[11px] text-slate-400 mt-1 block">
+              Soma dos valores de mercado
+            </span>
           </div>
         </div>
 

@@ -262,9 +262,7 @@ export function ClubTransactionsTab({
       {/* Header com título, subtítulo e botão exportar CSV (Figma 9-41319) */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-base sm:text-lg font-bold text-slate-900">
-            Histórico de transações
-          </h2>
+          <h2 className="text-base sm:text-lg font-bold text-slate-900">Histórico de transações</h2>
           <p className="text-xs text-slate-500 mt-0.5">
             Registro imutável de todas as compras e vendas de jogadores pelo clube.
           </p>
@@ -330,9 +328,7 @@ export function ClubTransactionsTab({
 
         {/* Filtro por Jogador */}
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-slate-700">
-            Filtrar por jogador:
-          </span>
+          <span className="text-xs font-semibold text-slate-700">Filtrar por jogador:</span>
           <Select
             value={selectedPlayerId !== undefined ? String(selectedPlayerId) : 'ALL'}
             onValueChange={handlePlayerChange}
@@ -459,9 +455,7 @@ export function ClubTransactionsTab({
                         <div className="h-6 w-6 rounded-full bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center text-[10px] font-bold shrink-0">
                           {getInitials(tx.player_name)}
                         </div>
-                        <span className="font-bold text-sm text-slate-900">
-                          {tx.player_name}
-                        </span>
+                        <span className="font-bold text-sm text-slate-900">{tx.player_name}</span>
                         {position && (
                           <span className="inline-flex items-center justify-center font-sans text-[11px] font-medium text-slate-600 px-1.5 py-0.2 rounded border border-slate-200 bg-white shadow-2xs">
                             ({position})
@@ -534,7 +528,8 @@ export function ClubTransactionsTab({
 
       {/* Nota de rodapé da regra de negócio imutável */}
       <p className="text-[11px] text-slate-500">
-        * Toda transação guarda os valores e o nome do momento e nunca é recalculada nem editada (RN17).
+        * Toda transação guarda os valores e o nome do momento e nunca é recalculada nem editada
+        (RN17).
       </p>
     </div>
   );

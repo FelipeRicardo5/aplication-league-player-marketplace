@@ -8,12 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-} from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { formatCurrency } from '@/lib/formatters';
 import type { ClubSummary } from '../types';
 
@@ -64,7 +59,9 @@ export function ClubsTable({ clubs, sort = 'net_worth_desc', onSortChange }: Clu
                 </div>
               </SelectTrigger>
               <SelectContent align="end" className="w-[260px]">
-                <div className="px-2 py-1.5 text-[11px] font-medium text-slate-400">Ordenar por</div>
+                <div className="px-2 py-1.5 text-[11px] font-medium text-slate-400">
+                  Ordenar por
+                </div>
                 <SelectItem value="name" className="text-xs cursor-pointer">
                   Nome
                 </SelectItem>
@@ -110,7 +107,8 @@ export function ClubsTable({ clubs, sort = 'net_worth_desc', onSortChange }: Clu
                   <div className="flex flex-col items-center justify-center gap-1.5">
                     <p className="text-sm font-semibold text-slate-800">Nenhum clube encontrado</p>
                     <p className="text-xs text-muted-foreground max-w-sm">
-                      Ainda não existem agremiações cadastradas na liga. Crie o primeiro clube para iniciar.
+                      Ainda não existem agremiações cadastradas na liga. Crie o primeiro clube para
+                      iniciar.
                     </p>
                   </div>
                 </TableCell>
@@ -175,7 +173,8 @@ export function ClubsTable({ clubs, sort = 'net_worth_desc', onSortChange }: Clu
 
       {/* Nota de rodapé oficial conforme Figma J01/J04 */}
       <p className="text-xs text-slate-400">
-        Clubes pelo nome por padrão ou pelo patrimônio, do maior para o menor, com empate desfeito pelo nome.
+        Clubes pelo nome por padrão ou pelo patrimônio, do maior para o menor, com empate desfeito
+        pelo nome.
       </p>
     </div>
   );

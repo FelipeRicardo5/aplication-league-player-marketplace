@@ -84,34 +84,34 @@ function MiniPitch({ formation }: { formation: FormationType }) {
       case '3-1':
         return [
           { cx: 14, cy: 30 }, // GOL
-          { cx: 6, cy: 23 },  // DEF 1
+          { cx: 6, cy: 23 }, // DEF 1
           { cx: 14, cy: 23 }, // DEF 2
           { cx: 22, cy: 23 }, // DEF 3
-          { cx: 14, cy: 8 },  // ATA
+          { cx: 14, cy: 8 }, // ATA
         ];
       case '2-2':
         return [
           { cx: 14, cy: 30 }, // GOL
-          { cx: 9, cy: 23 },  // DEF 1
+          { cx: 9, cy: 23 }, // DEF 1
           { cx: 19, cy: 23 }, // DEF 2
-          { cx: 9, cy: 8 },   // ATA 1
-          { cx: 19, cy: 8 },  // ATA 2
+          { cx: 9, cy: 8 }, // ATA 1
+          { cx: 19, cy: 8 }, // ATA 2
         ];
       case '2-1-1':
         return [
           { cx: 14, cy: 30 }, // GOL
-          { cx: 9, cy: 23 },  // DEF 1
+          { cx: 9, cy: 23 }, // DEF 1
           { cx: 19, cy: 23 }, // DEF 2
           { cx: 14, cy: 16 }, // MEI
-          { cx: 14, cy: 8 },  // ATA
+          { cx: 14, cy: 8 }, // ATA
         ];
       case '1-2-1':
         return [
           { cx: 14, cy: 30 }, // GOL
           { cx: 14, cy: 24 }, // DEF
-          { cx: 8, cy: 16 },  // MEI 1
+          { cx: 8, cy: 16 }, // MEI 1
           { cx: 20, cy: 16 }, // MEI 2
-          { cx: 14, cy: 8 },  // ATA
+          { cx: 14, cy: 8 }, // ATA
         ];
     }
   };
@@ -121,15 +121,47 @@ function MiniPitch({ formation }: { formation: FormationType }) {
     <div className="w-7 h-9 rounded-md bg-[#0D542B] overflow-hidden relative shrink-0 shadow-2xs border border-[#093F1C]">
       <svg viewBox="0 0 28 36" className="w-full h-full pointer-events-none">
         {/* Pitch boundary */}
-        <rect x="2" y="2" width="24" height="32" rx="2" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        <rect
+          x="2"
+          y="2"
+          width="24"
+          height="32"
+          rx="2"
+          fill="none"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="0.75"
+        />
         {/* Halfway line */}
         <line x1="2" y1="18" x2="26" y2="18" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
         {/* Center circle */}
-        <circle cx="14" cy="18" r="3.5" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        <circle
+          cx="14"
+          cy="18"
+          r="3.5"
+          fill="none"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="0.75"
+        />
         {/* Goal area bottom */}
-        <rect x="8" y="28" width="12" height="6" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        <rect
+          x="8"
+          y="28"
+          width="12"
+          height="6"
+          fill="none"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="0.75"
+        />
         {/* Goal area top */}
-        <rect x="8" y="2" width="12" height="6" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="0.75" />
+        <rect
+          x="8"
+          y="2"
+          width="12"
+          height="6"
+          fill="none"
+          stroke="rgba(255,255,255,0.35)"
+          strokeWidth="0.75"
+        />
 
         {/* Formation dots */}
         {dots.map((d, i) => (
@@ -225,10 +257,12 @@ function renderSlotAttributes(formation: FormationType, slotIndex: number, playe
     return (
       <span className="space-x-1.5">
         <span>
-          {attackAttr} <strong className="text-slate-900 font-bold tabular-nums">{attackVal}</strong>
+          {attackAttr}{' '}
+          <strong className="text-slate-900 font-bold tabular-nums">{attackVal}</strong>
         </span>
         <span>
-          Defesa <strong className="text-slate-900 font-bold tabular-nums">{player.defending}</strong>
+          Defesa{' '}
+          <strong className="text-slate-900 font-bold tabular-nums">{player.defending}</strong>
         </span>
       </span>
     );
@@ -238,14 +272,16 @@ function renderSlotAttributes(formation: FormationType, slotIndex: number, playe
     if (formation === '3-1') {
       return (
         <span>
-          Drible <strong className="text-slate-900 font-bold tabular-nums">{player.dribbling}</strong>
+          Drible{' '}
+          <strong className="text-slate-900 font-bold tabular-nums">{player.dribbling}</strong>
         </span>
       );
     }
     if (formation === '2-2') {
       return (
         <span>
-          Finalização <strong className="text-slate-900 font-bold tabular-nums">{player.shooting}</strong>
+          Finalização{' '}
+          <strong className="text-slate-900 font-bold tabular-nums">{player.shooting}</strong>
         </span>
       );
     }
@@ -259,7 +295,8 @@ function renderSlotAttributes(formation: FormationType, slotIndex: number, playe
   // Slot 4: 4º de linha (o mais avançado) -> só ataca com Finalização
   return (
     <span>
-      Finalização <strong className="text-slate-900 font-bold tabular-nums">{player.shooting}</strong>
+      Finalização{' '}
+      <strong className="text-slate-900 font-bold tabular-nums">{player.shooting}</strong>
     </span>
   );
 }
@@ -267,7 +304,13 @@ function renderSlotAttributes(formation: FormationType, slotIndex: number, playe
 export function ClubLineupTab({ club }: ClubLineupTabProps) {
   const { data: lineup, isLoading, refetch } = useClubLineupQuery(club.id);
   const [selectedFormation, setSelectedFormation] = useState<FormationType>('2-1-1');
-  const [slotPlayerIds, setSlotPlayerIds] = useState<(number | null)[]>([null, null, null, null, null]);
+  const [slotPlayerIds, setSlotPlayerIds] = useState<(number | null)[]>([
+    null,
+    null,
+    null,
+    null,
+    null,
+  ]);
   const [apiError, setApiError] = useState<string | null>(null);
 
   const squad: Player[] = club.players || [];
@@ -428,7 +471,8 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
               <div>
                 <h3 className="text-base font-bold text-slate-900">Titulares</h3>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  1 goleiro e 4 jogadores de linha, na formação escolhida. Salvar troca os 5 de uma vez.
+                  1 goleiro e 4 jogadores de linha, na formação escolhida. Salvar troca os 5 de uma
+                  vez.
                 </p>
               </div>
 
@@ -468,7 +512,8 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                   <div className="space-y-0.5">
                     <p className="text-xs font-bold text-amber-900">A escalação está incompleta</p>
                     <p className="text-xs text-amber-800 leading-relaxed">
-                      Titular vendido ou doente saiu da escalação. O clube só volta a jogar depois de escalar de novo.
+                      Titular vendido ou doente saiu da escalação. O clube só volta a jogar depois
+                      de escalar de novo.
                     </p>
                   </div>
                 </div>
@@ -481,7 +526,8 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                 <div className="space-y-0.5">
                   <p className="text-xs font-bold text-slate-900">Nenhum jogador no elenco</p>
                   <p className="text-xs text-slate-600 leading-relaxed">
-                    Compre pelo menos 5 jogadores livres no mercado para poder montar a escalação do clube.
+                    Compre pelo menos 5 jogadores livres no mercado para poder montar a escalação do
+                    clube.
                   </p>
                 </div>
               </div>
@@ -492,7 +538,8 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
               <div className="mb-2.5">
                 <h4 className="text-xs font-bold text-slate-900">Formação</h4>
                 <p className="text-[11px] text-slate-400 mt-0.5">
-                  Os números contam os jogadores de linha de trás para frente. O goleiro fica fora da conta.
+                  Os números contam os jogadores de linha de trás para frente. O goleiro fica fora
+                  da conta.
                 </p>
               </div>
 
@@ -518,9 +565,7 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                             <span
                               className={cn(
                                 'h-3.5 w-3.5 rounded-full border flex items-center justify-center shrink-0',
-                                isSelected
-                                  ? 'border-blue-600'
-                                  : 'border-slate-300 bg-white',
+                                isSelected ? 'border-blue-600' : 'border-slate-300 bg-white',
                               )}
                             >
                               {isSelected && <span className="h-2 w-2 rounded-full bg-blue-600" />}
@@ -700,7 +745,8 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
             {/* Rodapé de Ações */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-slate-100 mt-4">
               <p className="text-[11px] text-slate-500 max-w-md leading-relaxed">
-                A escalação vale até ser trocada. Titular vendido ou que fica doente sai dela, e o clube só volta a jogar depois de escalar de novo.
+                A escalação vale até ser trocada. Titular vendido ou que fica doente sai dela, e o
+                clube só volta a jogar depois de escalar de novo.
               </p>
               <div className="flex items-center gap-2 shrink-0">
                 <Button
@@ -729,7 +775,8 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
           </div>
 
           <p className="text-xs text-slate-400">
-            Depois de salvar, a tela mostra a mensagem de sucesso e a escalação devolvida pela API, na ordem do elenco (RN19 e F12).
+            Depois de salvar, a tela mostra a mensagem de sucesso e a escalação devolvida pela API,
+            na ordem do elenco (RN19 e F12).
           </p>
         </div>
 
@@ -774,27 +821,91 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
                   strokeWidth="1.5"
                 />
                 {/* 4 Arcos de escanteio */}
-                <path d="M 12 24 A 12 12 0 0 0 24 12" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-                <path d="M 288 24 A 12 12 0 0 1 276 12" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-                <path d="M 12 376 A 12 12 0 0 1 24 388" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
-                <path d="M 288 376 A 12 12 0 0 0 276 388" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <path
+                  d="M 12 24 A 12 12 0 0 0 24 12"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M 288 24 A 12 12 0 0 1 276 12"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M 12 376 A 12 12 0 0 1 24 388"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
+                <path
+                  d="M 288 376 A 12 12 0 0 0 276 388"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
 
                 {/* Linha de meio-campo */}
-                <line x1="12" y1="200" x2="288" y2="200" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <line
+                  x1="12"
+                  y1="200"
+                  x2="288"
+                  y2="200"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
                 {/* Círculo central e ponto */}
-                <circle cx="150" cy="200" r="45" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <circle
+                  cx="150"
+                  cy="200"
+                  r="45"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
                 <circle cx="150" cy="200" r="2.5" fill="rgba(255,255,255,0.6)" />
 
                 {/* Grande área do goleiro (embaixo) */}
-                <rect x="65" y="300" width="170" height="88" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <rect
+                  x="65"
+                  y="300"
+                  width="170"
+                  height="88"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
                 {/* Pequena área do goleiro (embaixo) */}
-                <rect x="105" y="348" width="90" height="40" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <rect
+                  x="105"
+                  y="348"
+                  width="90"
+                  height="40"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
                 {/* Meia-lua da grande área */}
-                <path d="M 120 300 A 35 35 0 0 1 180 300" fill="none" stroke="rgba(255,255,255,0.35)" strokeWidth="1.5" />
+                <path
+                  d="M 120 300 A 35 35 0 0 1 180 300"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.35)"
+                  strokeWidth="1.5"
+                />
                 {/* Ponto de pênalti */}
                 <circle cx="150" cy="330" r="2.5" fill="rgba(255,255,255,0.6)" />
                 {/* Rede do gol embaixo */}
-                <rect x="120" y="388" width="60" height="8" rx="1" fill="none" stroke="rgba(255,255,255,0.25)" strokeWidth="1" />
+                <rect
+                  x="120"
+                  y="388"
+                  width="60"
+                  height="8"
+                  rx="1"
+                  fill="none"
+                  stroke="rgba(255,255,255,0.25)"
+                  strokeWidth="1"
+                />
               </svg>
 
               {/* Ataque (Topo) */}
@@ -928,7 +1039,8 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
             <div className="flex items-start gap-2 pt-3 text-[11px] text-slate-500 leading-tight">
               <Swords className="h-4 w-4 text-slate-400 shrink-0 mt-0.5" />
               <span>
-                Na partida, atacam os 3 jogadores de linha mais avançados e defendem o goleiro e os 2 mais recuados. É gol quando o ataque é maior que a defesa.
+                Na partida, atacam os 3 jogadores de linha mais avançados e defendem o goleiro e os
+                2 mais recuados. É gol quando o ataque é maior que a defesa.
               </span>
             </div>
           </div>
@@ -943,9 +1055,7 @@ export function ClubLineupTab({ club }: ClubLineupTabProps) {
             </div>
 
             {reservePlayers.length === 0 ? (
-              <p className="text-xs text-slate-400 py-3 text-center">
-                Nenhum reserva no elenco.
-              </p>
+              <p className="text-xs text-slate-400 py-3 text-center">Nenhum reserva no elenco.</p>
             ) : (
               <div className="divide-y divide-slate-100">
                 {reservePlayers.map((player) => (

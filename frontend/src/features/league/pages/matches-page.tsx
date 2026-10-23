@@ -317,7 +317,8 @@ export function MatchesPage() {
             {/* Rodapé da tabela com contagem e paginação */}
             <div className="border-t border-slate-200/80 bg-slate-50/50 px-4 py-3 flex items-center justify-between text-xs text-slate-500">
               <span>
-                {matches.length} {matches.length === 1 ? 'partida realizada' : 'partidas realizadas'}
+                {matches.length}{' '}
+                {matches.length === 1 ? 'partida realizada' : 'partidas realizadas'}
               </span>
             </div>
           </div>
@@ -325,7 +326,8 @@ export function MatchesPage() {
 
         {/* Nota da RN20 / RN21 */}
         <p className="text-[11px] text-slate-500">
-          * Toda partida grava o placar e os 6 duelos táticos e nunca é recalculada nem editada (RN20, RN21).
+          * Toda partida grava o placar e os 6 duelos táticos e nunca é recalculada nem editada
+          (RN20, RN21).
         </p>
       </div>
 

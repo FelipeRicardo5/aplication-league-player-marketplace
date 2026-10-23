@@ -157,11 +157,7 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-800">Posição</Label>
             <input type="hidden" {...register('position')} />
-            <div
-              role="radiogroup"
-              aria-label="Posição"
-              className="grid grid-cols-5 gap-2"
-            >
+            <div role="radiogroup" aria-label="Posição" className="grid grid-cols-5 gap-2">
               {POSITION_OPTIONS.map((pos) => {
                 const isSelected = selectedPosition === pos.value;
                 return (
@@ -170,9 +166,7 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
                     type="button"
                     role="radio"
                     aria-checked={isSelected}
-                    onClick={() =>
-                      setValue('position', pos.value, { shouldValidate: true })
-                    }
+                    onClick={() => setValue('position', pos.value, { shouldValidate: true })}
                     className={cn(
                       'flex flex-col items-center justify-center py-2.5 px-1 rounded-lg border text-xs transition-all duration-150 cursor-pointer select-none',
                       isSelected
@@ -252,9 +246,7 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-xs font-semibold text-slate-800">
-                Valor base (moedas)
-              </Label>
+              <Label className="text-xs font-semibold text-slate-800">Valor base (moedas)</Label>
               <div className="flex h-10 w-full items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-3 text-sm text-slate-400 select-none">
                 <Lock className="h-4 w-4 text-slate-400" />
                 <span>Após salvar</span>
@@ -299,7 +291,10 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="create-shooting" className="text-xs font-semibold text-slate-800">
+                    <Label
+                      htmlFor="create-shooting"
+                      className="text-xs font-semibold text-slate-800"
+                    >
                       Finalização
                     </Label>
                     <Input
@@ -319,7 +314,10 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="create-passing" className="text-xs font-semibold text-slate-800">
+                    <Label
+                      htmlFor="create-passing"
+                      className="text-xs font-semibold text-slate-800"
+                    >
                       Passe
                     </Label>
                     <Input
@@ -339,7 +337,10 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="create-dribbling" className="text-xs font-semibold text-slate-800">
+                    <Label
+                      htmlFor="create-dribbling"
+                      className="text-xs font-semibold text-slate-800"
+                    >
                       Drible
                     </Label>
                     <Input
@@ -362,7 +363,10 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
                 {/* Linha 2: Defesa, Físico, Potencial, Overall */}
                 <div className="grid grid-cols-4 gap-2.5">
                   <div className="space-y-1">
-                    <Label htmlFor="create-defending" className="text-xs font-semibold text-slate-800">
+                    <Label
+                      htmlFor="create-defending"
+                      className="text-xs font-semibold text-slate-800"
+                    >
                       Defesa
                     </Label>
                     <Input
@@ -382,7 +386,10 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
                   </div>
 
                   <div className="space-y-1">
-                    <Label htmlFor="create-physical" className="text-xs font-semibold text-slate-800">
+                    <Label
+                      htmlFor="create-physical"
+                      className="text-xs font-semibold text-slate-800"
+                    >
                       Físico
                     </Label>
                     <Input
@@ -403,7 +410,10 @@ export function PlayerCreateDialog({ open, onOpenChange }: PlayerCreateDialogPro
 
                   <div className="space-y-1">
                     <div className="flex justify-between items-center">
-                      <Label htmlFor="create-potential" className="text-xs font-semibold text-slate-800">
+                      <Label
+                        htmlFor="create-potential"
+                        className="text-xs font-semibold text-slate-800"
+                      >
                         Potencial
                       </Label>
                       {age >= 33 && (

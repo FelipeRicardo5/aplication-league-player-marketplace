@@ -64,10 +64,7 @@ export function AppLayout() {
             : 'w-full md:w-[calc(100%-4.25rem)] ml-0 md:ml-[4.25rem] translate-x-0',
         )}
       >
-        <Header
-          sidebarOpen={sidebarOpen}
-          onToggleSidebar={() => setSidebarOpen((prev) => !prev)}
-        />
+        <Header sidebarOpen={sidebarOpen} onToggleSidebar={() => setSidebarOpen((prev) => !prev)} />
         <main className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-6 lg:p-8">
           <Outlet />
         </main>
@@ -75,4 +72,3 @@ export function AppLayout() {
     </div>
   );
 }
-

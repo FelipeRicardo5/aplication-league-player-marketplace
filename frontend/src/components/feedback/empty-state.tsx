@@ -36,7 +36,9 @@ export function EmptyState({
         {icon || <Inbox className="h-6 w-6" />}
       </div>
       <h3 className="text-base font-bold text-slate-900 mb-1.5">{title}</h3>
-      <p className="text-xs sm:text-sm text-slate-500 max-w-md mb-6 leading-relaxed">{description}</p>
+      <p className="text-xs sm:text-sm text-slate-500 max-w-md mb-6 leading-relaxed">
+        {description}
+      </p>
       {actionLabel && actionHref && (
         <Button
           asChild

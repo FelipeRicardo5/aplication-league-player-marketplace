@@ -63,13 +63,13 @@ export function PlayersPage() {
   const counts = {
     all:
       allCountData?.meta?.total_items ??
-      (filters.free === undefined ? data?.meta?.total_items ?? 0 : 0),
+      (filters.free === undefined ? (data?.meta?.total_items ?? 0) : 0),
     free:
       freeCountData?.meta?.total_items ??
-      (filters.free === true ? data?.meta?.total_items ?? 0 : 0),
+      (filters.free === true ? (data?.meta?.total_items ?? 0) : 0),
     club:
       clubCountData?.meta?.total_items ??
-      (filters.free === false ? data?.meta?.total_items ?? 0 : 0),
+      (filters.free === false ? (data?.meta?.total_items ?? 0) : 0),
   };
 
   const activeTab: 'all' | 'free' | 'club' =
@@ -114,7 +114,8 @@ export function PlayersPage() {
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Jogadores</h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Consulte o catálogo de jogadores da liga, seus atributos, valor de mercado e cadastre novos atletas.
+              Consulte o catálogo de jogadores da liga, seus atributos, valor de mercado e cadastre
+              novos atletas.
             </p>
           </div>
         </div>
@@ -144,7 +145,11 @@ export function PlayersPage() {
           message={error?.message || 'Falha ao buscar a lista de jogadores da API.'}
           onRetry={refetch}
         />
-      ) : counts.all === 0 && !filters.search && !filters.position && !filters.condition && !filters.club_id ? (
+      ) : counts.all === 0 &&
+        !filters.search &&
+        !filters.position &&
+        !filters.condition &&
+        !filters.club_id ? (
         <EmptyState
           icon={<Users className="h-6 w-6 text-slate-500" />}
           title="Nenhum jogador cadastrado"

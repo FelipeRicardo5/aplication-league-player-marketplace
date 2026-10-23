@@ -229,7 +229,8 @@ export function StandingsPage() {
 
                 {/* Legenda de siglas (Figma L05) */}
                 <div className="border-t border-slate-100 bg-white px-4 py-3 text-[11px] text-slate-400">
-                  J: jogos · V: vitórias · E: empates · D: derrotas · GP: gols marcados · GC: gols sofridos · SG: saldo de gols · Pts: pontos
+                  J: jogos · V: vitórias · E: empates · D: derrotas · GP: gols marcados · GC: gols
+                  sofridos · SG: saldo de gols · Pts: pontos
                 </div>
               </div>
             </div>
@@ -240,7 +241,9 @@ export function StandingsPage() {
               <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-3">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Últimas partidas</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Da mais recente para a mais antiga.</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Da mais recente para a mais antiga.
+                  </p>
                 </div>
 
                 {recentMatches.length === 0 ? (
@@ -303,7 +306,9 @@ export function StandingsPage() {
               <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs space-y-3">
                 <div>
                   <h3 className="text-sm font-bold text-slate-900">Ordem da tabela</h3>
-                  <p className="text-xs text-slate-400 mt-0.5">Critérios de classificação, nesta ordem.</p>
+                  <p className="text-xs text-slate-400 mt-0.5">
+                    Critérios de classificação, nesta ordem.
+                  </p>
                 </div>
 
                 <div className="space-y-2.5 pt-1">
@@ -313,7 +318,10 @@ export function StandingsPage() {
                     { num: 3, text: 'Mais gols marcados' },
                     { num: 4, text: 'Nome do clube, de A a Z' },
                   ].map((item) => (
-                    <div key={item.num} className="flex items-center gap-2.5 text-xs text-slate-700">
+                    <div
+                      key={item.num}
+                      className="flex items-center gap-2.5 text-xs text-slate-700"
+                    >
                       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-slate-700 font-semibold text-[11px] shrink-0">
                         {item.num}
                       </span>
@@ -327,7 +335,8 @@ export function StandingsPage() {
 
           {/* Nota de rodapé da RN21 (Figma L05) */}
           <p className="text-xs text-slate-400 pt-1">
-            Classificação de 1 a 6, com os clubes sem partidas zerados. Pontos, saldo e posição são calculados a cada consulta, nunca gravados (RN21).
+            Classificação de 1 a 6, com os clubes sem partidas zerados. Pontos, saldo e posição são
+            calculados a cada consulta, nunca gravados (RN21).
           </p>
         </div>
       )}

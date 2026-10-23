@@ -87,9 +87,7 @@ export function PlayerEditDialog({ player, open, onOpenChange }: PlayerEditDialo
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg p-6">
         <DialogHeader>
-          <DialogTitle className="text-lg font-bold text-slate-900">
-            Editar jogador
-          </DialogTitle>
+          <DialogTitle className="text-lg font-bold text-slate-900">Editar jogador</DialogTitle>
           <DialogDescription className="text-xs text-slate-500 mt-0.5">
             Edite nome, posição, idade e agilidade. Os demais dados não mudam.
           </DialogDescription>
@@ -121,11 +119,7 @@ export function PlayerEditDialog({ player, open, onOpenChange }: PlayerEditDialo
           <div className="space-y-1.5">
             <Label className="text-xs font-semibold text-slate-800">Posição</Label>
             <input type="hidden" {...register('position')} />
-            <div
-              role="radiogroup"
-              aria-label="Posição"
-              className="grid grid-cols-5 gap-2"
-            >
+            <div role="radiogroup" aria-label="Posição" className="grid grid-cols-5 gap-2">
               {POSITION_OPTIONS.map((pos) => {
                 const isSelected = selectedPosition === pos.value;
                 return (
@@ -178,9 +172,7 @@ export function PlayerEditDialog({ player, open, onOpenChange }: PlayerEditDialo
                 ? 'Jogador com clube não muda de posição: as outras posições ficam desabilitadas.'
                 : 'Selecione a nova posição do atleta livre.'}
             </p>
-            {errors.position && (
-              <p className="text-xs text-[#BF000F]">{errors.position.message}</p>
-            )}
+            {errors.position && <p className="text-xs text-[#BF000F]">{errors.position.message}</p>}
           </div>
 
           {/* Idade e Agilidade lado a lado */}
@@ -215,12 +207,8 @@ export function PlayerEditDialog({ player, open, onOpenChange }: PlayerEditDialo
                 {...register('agility')}
                 error={Boolean(errors.agility)}
               />
-              <p className="text-xs text-slate-500">
-                De 1 a 100 (até 85 com 35 anos ou mais).
-              </p>
-              {errors.agility && (
-                <p className="text-xs text-[#BF000F]">{errors.agility.message}</p>
-              )}
+              <p className="text-xs text-slate-500">De 1 a 100 (até 85 com 35 anos ou mais).</p>
+              {errors.agility && <p className="text-xs text-[#BF000F]">{errors.agility.message}</p>}
             </div>
           </div>
 
@@ -228,7 +216,8 @@ export function PlayerEditDialog({ player, open, onOpenChange }: PlayerEditDialo
           <div className="rounded-lg border border-slate-200 bg-slate-50/70 p-3 flex items-center gap-2.5">
             <Lock className="h-4 w-4 text-slate-400 shrink-0" />
             <span className="text-xs text-slate-600">
-              Não mudam depois do cadastro: valor base ({formatCurrency(player.base_value, false)}), indicadores e potencial.
+              Não mudam depois do cadastro: valor base ({formatCurrency(player.base_value, false)}),
+              indicadores e potencial.
             </span>
           </div>
 

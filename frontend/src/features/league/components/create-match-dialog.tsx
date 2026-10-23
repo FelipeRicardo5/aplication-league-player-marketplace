@@ -112,9 +112,7 @@ export function CreateMatchDialog({ open, onOpenChange, onMatchCreated }: Create
                 <h4 className="font-semibold text-xs text-rose-900">
                   A partida não pôde ser realizada
                 </h4>
-                <p className="text-xs text-rose-700 mt-0.5 leading-relaxed">
-                  {apiErrorMessage}
-                </p>
+                <p className="text-xs text-rose-700 mt-0.5 leading-relaxed">{apiErrorMessage}</p>
               </div>
             </div>
           </div>
@@ -150,9 +148,7 @@ export function CreateMatchDialog({ open, onOpenChange, onMatchCreated }: Create
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-[11px] text-slate-400 block">
-              Clube com mando de campo
-            </span>
+            <span className="text-[11px] text-slate-400 block">Clube com mando de campo</span>
           </div>
 
           {/* Visitante */}
@@ -182,9 +178,7 @@ export function CreateMatchDialog({ open, onOpenChange, onMatchCreated }: Create
                 ))}
               </SelectContent>
             </Select>
-            <span className="text-[11px] text-slate-400 block">
-              Clube que joga fora de casa
-            </span>
+            <span className="text-[11px] text-slate-400 block">Clube que joga fora de casa</span>
           </div>
 
           {/* Regras da partida */}
@@ -194,7 +188,8 @@ export function CreateMatchDialog({ open, onOpenChange, onMatchCreated }: Create
               Regras da partida
             </span>
             <p className="text-[11px] text-slate-500 leading-relaxed">
-              A partida é disputada sem sorteio, por meio de 6 duelos táticos diretos entre os 5 titulares de cada clube conforme a RN20.
+              A partida é disputada sem sorteio, por meio de 6 duelos táticos diretos entre os 5
+              titulares de cada clube conforme a RN20.
             </p>
           </div>
 
