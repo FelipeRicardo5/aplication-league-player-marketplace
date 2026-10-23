@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: league
       POSTGRES_DB: league_marketplace
     ports:
-      - "5432:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -29,10 +29,10 @@ services:
     environment:
       DATABASE_URL: postgresql://league:league@db:5432/league_marketplace?schema=public
       PORT: 3000
-      CORS_ORIGIN: http://localhost:5173
+      CORS_ORIGIN: http://localhost:${FRONTEND_PORT:-5173}
       NODE_ENV: production
     ports:
-      - "3000:3000"
+      - "${API_PORT:-3000}:3000"
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:3000/api/v1/health || exit 1"]
       interval: 5s
@@ -45,14 +45,14 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        VITE_API_URL: http://localhost:3000/api/v1
+        VITE_API_URL: http://localhost:${API_PORT:-3000}/api/v1
     container_name: league-frontend
     restart: unless-stopped
     depends_on:
       api:
         condition: service_healthy
     ports:
-      - "5173:80"
+      - "${FRONTEND_PORT:-5173}:80"
 
 volumes:
   pgdata:
