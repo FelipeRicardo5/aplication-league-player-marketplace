@@ -80,24 +80,40 @@ export class MarketService {
     // RN13 - Limite de 50% do caixa antes da compra (sem arredondamento)
     const clubCash = Number(club.caixa);
     const maxAllowedCost = clubCash / 2;
-    if (totalCost > maxAllowedCost) {
+    if (clubCash <= 0 || totalCost > maxAllowedCost) {
       throw new ConflictException('Custo total da compra excede 50% do caixa do clube');
     }
 
     const now = this.clock.now();
     const loyaltyUntil = new Date(dto.loyalty_until);
-    const newCash = roundCurrency(clubCash - totalCost);
 
-    // Execução atômica no banco (RN12, B2)
+    // Execução atômica no banco (RN12, B2) com proteção de concorrência
     const result = await this.prisma.$transaction(async (tx) => {
-      await tx.clubes.update({
+      const freshClub = await tx.clubes.findUnique({
         where: { id: club.id },
-        data: { caixa: newCash },
+      });
+      if (!freshClub) {
+        throw new NotFoundException('Clube não encontrado');
+      }
+
+      const currentCash = Number(freshClub.caixa);
+      if (currentCash <= 0 || totalCost > currentCash / 2) {
+        throw new ConflictException('Custo total da compra excede 50% do caixa do clube');
+      }
+
+      const updatePlayerResult = await tx.jogadores.updateMany({
+        where: { id: player.id, clube_id: null, excluido_em: null },
+        data: { clube_id: club.id },
       });
 
-      await tx.jogadores.update({
-        where: { id: player.id },
-        data: { clube_id: club.id },
+      if (updatePlayerResult.count === 0) {
+        throw new ConflictException('Jogador não está livre para compra');
+      }
+
+      const updatedCash = roundCurrency(currentCash - totalCost);
+      await tx.clubes.update({
+        where: { id: club.id },
+        data: { caixa: updatedCash },
       });
 
       const contract = await tx.contratos.create({
@@ -126,7 +142,7 @@ export class MarketService {
         },
       });
 
-      return { transaction, contract };
+      return { transaction, contract, finalCash: updatedCash };
     });
 
     return {
@@ -146,7 +162,7 @@ export class MarketService {
         loyalty_until: formatIsoBrasilia(loyaltyUntil),
         status: 'ATIVO' as const,
       },
-      club_cash: newCash,
+      club_cash: result.finalCash,
     };
   }
 
@@ -212,21 +228,32 @@ export class MarketService {
 
     // Crédito no caixa
     const cashChange = roundCurrency(saleValue - penalty - fee);
-    const clubCash = Number(club.caixa);
-    const newCash = roundCurrency(clubCash + cashChange);
-
     const contractStatus = penalty > 0 ? 'RESCINDIDO' : 'ENCERRADO';
 
-    // Execução atômica no banco (RN16, RN19 item 5, B2)
+    // Execução atômica no banco (RN16, RN19 item 5, B2) com proteção de concorrência
     const result = await this.prisma.$transaction(async (tx) => {
-      await tx.clubes.update({
+      const freshClub = await tx.clubes.findUnique({
         where: { id: club.id },
-        data: { caixa: newCash },
+      });
+      if (!freshClub) {
+        throw new NotFoundException('Clube não encontrado');
+      }
+
+      const updatePlayerResult = await tx.jogadores.updateMany({
+        where: { id: player.id, clube_id: club.id, excluido_em: null },
+        data: { clube_id: null },
       });
 
-      await tx.jogadores.update({
-        where: { id: player.id },
-        data: { clube_id: null },
+      if (updatePlayerResult.count === 0) {
+        throw new ConflictException('Jogador não pertence a este clube');
+      }
+
+      const currentCash = Number(freshClub.caixa);
+      const updatedCash = roundCurrency(currentCash + cashChange);
+
+      await tx.clubes.update({
+        where: { id: club.id },
+        data: { caixa: updatedCash },
       });
 
       // Se o jogador estiver na escalação titular, remove-o
@@ -260,11 +287,11 @@ export class MarketService {
         },
       });
 
-      return transaction;
+      return { transaction, finalCash: updatedCash };
     });
 
     return {
-      id: result.id,
+      id: result.transaction.id,
       club_id: club.id,
       player_id: player.id,
       player_name: player.nome,
@@ -274,12 +301,12 @@ export class MarketService {
       penalty: penalty,
       profit: profit,
       cash_change: cashChange,
-      created_at: formatIsoBrasilia(result.criado_em),
+      created_at: formatIsoBrasilia(result.transaction.criado_em),
       purchase_value: purchaseValue,
       remaining_days: remainingDays,
       penalty_rate: penaltyRate,
       contract_status: contractStatus,
-      club_cash: newCash,
+      club_cash: result.finalCash,
     };
   }
 }

@@ -20,6 +20,7 @@ describe('MarketService', () => {
       jogadores: {
         findFirst: jest.fn(),
         update: jest.fn(),
+        updateMany: jest.fn().mockResolvedValue({ count: 1 }),
       },
       clubes: {
         findUnique: jest.fn(),
@@ -163,10 +164,19 @@ describe('MarketService', () => {
         where: { id: 1 },
         data: { caixa: 261.15 },
       });
-      expect(prisma.jogadores.update).toHaveBeenCalledWith({
-        where: { id: 2 },
+      expect(prisma.jogadores.updateMany).toHaveBeenCalledWith({
+        where: { id: 2, clube_id: null, excluido_em: null },
         data: { clube_id: 1 },
       });
+    });
+
+    it('should throw ConflictException if player is concurrently bought by another transaction (race condition)', async () => {
+      prisma.jogadores.findFirst.mockResolvedValue(mockFreePlayer);
+      prisma.clubes.findUnique.mockResolvedValue(mockClub);
+      prisma.transacoes.findFirst.mockResolvedValue(null);
+      prisma.jogadores.updateMany.mockResolvedValue({ count: 0 });
+
+      await expect(service.buyPlayer(2, buyDto)).rejects.toThrow(ConflictException);
     });
   });
 
@@ -261,8 +271,8 @@ describe('MarketService', () => {
         where: { id: 1 },
         data: { caixa: 296.85 },
       });
-      expect(prisma.jogadores.update).toHaveBeenCalledWith({
-        where: { id: 2 },
+      expect(prisma.jogadores.updateMany).toHaveBeenCalledWith({
+        where: { id: 2, clube_id: 1, excluido_em: null },
         data: { clube_id: null },
       });
       expect(prisma.escalacoes.deleteMany).toHaveBeenCalledWith({
@@ -272,6 +282,15 @@ describe('MarketService', () => {
         where: { id: 1 },
         data: { situacao: 'RESCINDIDO', encerrado_em: fixedNow },
       });
+    });
+
+    it('should throw ConflictException if player is concurrently sold by another transaction (race condition)', async () => {
+      prisma.jogadores.findFirst.mockResolvedValue(mockOwnedPlayer);
+      prisma.clubes.findUnique.mockResolvedValue(mockClub);
+      prisma.contratos.findFirst.mockResolvedValue(mockActiveContract);
+      prisma.jogadores.updateMany.mockResolvedValue({ count: 0 });
+
+      await expect(service.sellPlayer(2)).rejects.toThrow(ConflictException);
     });
   });
 });
