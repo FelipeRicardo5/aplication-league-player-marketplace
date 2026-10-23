@@ -1,16 +1,10 @@
 import { NavLink } from 'react-router-dom';
 import { Users, Shield, Swords, List, Plus, Trophy, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useQuery } from '@tanstack/react-query';
-import { apiGet } from '@/lib/api';
 import { BrandLogo } from './brand-logo';
-import type { Match } from '@/features/league/types';
-
-interface ClubSummary {
-  id: number;
-  name: string;
-  acronym: string;
-}
+import { useClubsQuery } from '@/features/clubs/hooks/use-clubs';
+import { usePlayersQuery } from '@/features/players/hooks/use-players';
+import { useMatchesQuery } from '@/features/league/hooks/use-league';
 
 interface SidebarProps {
   onItemClick?: () => void;
@@ -19,33 +13,21 @@ interface SidebarProps {
 }
 
 export function Sidebar({ onItemClick, className, isCollapsed = false }: SidebarProps) {
-  // Busca lista de clubes
-  const { data: clubs } = useQuery({
-    queryKey: ['clubs'],
-    queryFn: () => apiGet<ClubSummary[]>('clubs'),
-    staleTime: 1000 * 60,
-  });
+  // Busca lista de clubes sincronizada com cache global
+  const { data: clubs } = useClubsQuery();
 
-  // Busca contagem total de jogadores
-  const { data: playersData } = useQuery({
-    queryKey: ['players-count'],
-    queryFn: () => apiGet<{ meta: { total: number } }>('players?limit=1'),
-    staleTime: 1000 * 60,
-  });
+  // Busca contagem total de jogadores usando meta.total_items
+  const { data: playersData } = usePlayersQuery({ limit: 1 });
 
   // Busca partidas para contagem e resumo da última partida
-  const { data: matches } = useQuery({
-    queryKey: ['matches'],
-    queryFn: () => apiGet<Match[]>('matches'),
-    staleTime: 1000 * 60,
-  });
+  const { data: matches } = useMatchesQuery();
 
   const clubsCount = clubs?.length ?? 0;
-  const playersCount = playersData?.meta?.total ?? 0;
-  const matchesCount = matches?.length ?? 0;
+  const playersCount = playersData?.meta?.total_items ?? (playersData?.meta as unknown as { total?: number })?.total ?? 0;
+  const matchesCount = Array.isArray(matches) ? matches.length : ((matches as unknown as { data?: unknown[] })?.data?.length ?? 0);
 
   const lastMatch =
-    matches && matches.length > 0 ? [...matches].sort((a, b) => b.id - a.id)[0] : null;
+    Array.isArray(matches) && matches.length > 0 ? [...matches].sort((a, b) => b.id - a.id)[0] : null;
 
   const lastMatchText = lastMatch
     ? `${lastMatch.home.club_name} ${lastMatch.home.goals} × ${lastMatch.away.goals} ${lastMatch.away.club_name}`
