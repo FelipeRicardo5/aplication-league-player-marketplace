@@ -18,9 +18,9 @@ Interface web moderna para gestão do mercado de jogadores, clubes, escalações
 | **React Hook Form**          | `7.54.1`           | Gerenciamento performático de formulários desacoplado de re-renderizações desnecessárias.                                      |
 | **Zod**                      | `3.24.1`           | Validação declarativa de esquemas de formulário (regras de nome, idade, atributos, agilidade, sigla do clube).                 |
 | **Lucide React**             | `0.468.0`          | Ícones consistentes com a identidade visual do Figma.                                                                          |
-| **Vitest + Testing Library** | `2.1.9` / `16.1.0` | Testes unitários de regras de negócio de interface, formatadores, esquemas e componentes.                                      |
+| **Vitest + Testing Library** | `2.1.9` / `16.1.0` | Testes unitários de regras de negócio de interface, formatadores, esquemas e componentes (104 testes aprovados).               |
 | **Playwright**               | `1.49.1`           | Testes ponta a ponta (E2E) cobrindo fluxos reais desktop e mobile (375 px).                                                    |
-| **ESLint 9 + Prettier**      | `9.17.0` / `3.4.2` | Padronização de código e formatação automatizada.                                                                              |
+| **ESLint 9 + Prettier**      | `9.17.0` / `3.4.2` | Padronização de código e formatação automatizada sem erros.                                                                    |
 
 ---
 
@@ -54,17 +54,28 @@ VITE_API_URL=http://localhost:3000/api/v1
 
 ## 3. Comandos de Execução
 
+### 3.1 Execução Local
+
 | Comando                | Descrição                                                                      |
 | ---------------------- | ------------------------------------------------------------------------------ |
 | `npm run dev`          | Inicia o servidor Vite de desenvolvimento em `http://localhost:5173`.          |
 | `npm run build`        | Compila TypeScript (`tsc -b`) e gera o bundle de produção via Vite em `dist/`. |
 | `npm run preview`      | Executa localmente o bundle gerado em `dist/`.                                 |
-| `npm run test`         | Executa todos os testes unitários via Vitest.                                  |
+| `npm run test`         | Executa os 104 testes unitários via Vitest.                                    |
 | `npm run test:watch`   | Executa testes unitários em modo observador.                                   |
 | `npm run test:e2e`     | Executa os testes ponta a ponta via Playwright (desktop e mobile 375 px).      |
 | `npm run lint`         | Executa a verificação estática do código com ESLint.                           |
 | `npm run format:check` | Verifica a formatação do código com Prettier.                                  |
 | `npm run format`       | Corrige a formatação automaticamente com Prettier.                             |
+
+### 3.2 Execução com Docker
+
+O frontend está totalmente conteinerizado via `frontend/Dockerfile` em multi-stage build:
+
+- **Estágio 1 (Builder)**: Compilação dos assets com `node:22-alpine` e `VITE_API_URL` injetado via build args.
+- **Estágio 2 (Runner)**: Servidor `nginx:alpine` servindo o diretório estático com fallback de roteamento SPA (`try_files $uri /index.html`) e cache otimizado de assets.
+
+Quando executado via Docker Compose a partir da raiz (`docker compose up --build`), o frontend fica acessível em `http://localhost:5173`.
 
 ---
 
@@ -95,6 +106,8 @@ frontend/
 ├── tests/
 │   ├── e2e/                    # Suíte de testes ponta a ponta Playwright
 │   └── setup.ts                # Configuração do ambiente de testes unitários (Vitest + JSDOM)
+├── Dockerfile                  # Multi-stage build para produção
+├── nginx.conf                  # Nginx com fallback de SPA para rotas client-side
 ├── playwright.config.ts
 ├── vite.config.ts
 └── tailwind.config.ts
